@@ -1,0 +1,95 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+public class benutzerMenu extends JFrame {
+
+    private JButton persönlicheDaten;
+    private JButton passwortEinstellungen;
+    private JButton zurück;
+    private Font customFont;
+
+    public benutzerMenu() {
+        setTitle("Benutzermenü");
+        setSize(600, 400);
+        setLayout(new BorderLayout()); // Verwende BorderLayout für den Hintergrund
+
+        // Panel mit Hintergrundbild
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon icon = new ImageIcon("ressourcen/hintergrundBBQ-3.jpg");
+                Image img = icon.getImage();
+                g.drawImage(img, 0, 0, getWidth(), getHeight(), this); // Bild skalieren auf Panelgröße
+            }
+        };
+        backgroundPanel.setLayout(new GridBagLayout()); // Layout für die Buttons
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        // Schriftart laden
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("ressourcen/KGDoYouLoveMe.ttf"));
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(customFont);
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+            customFont = new Font("Arial", Font.PLAIN, 16);  // Fallback-Schriftart
+        }
+
+        // Buttons erstellen und konfigurieren
+        persönlicheDaten = new JButton("Persönliche Daten");
+        persönlicheDaten.setFont(customFont.deriveFont(16f));
+        persönlicheDaten.setPreferredSize(new Dimension(200, 30));
+        persönlicheDaten.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(benutzerMenu.this, "Bitte wenden Sie sich an Ihre Administrator");
+            }
+        });
+
+        passwortEinstellungen = new JButton("Passwort-Einstellungen");
+        passwortEinstellungen.setFont(customFont.deriveFont(16f));
+        passwortEinstellungen.setPreferredSize(new Dimension(200, 30));
+
+        zurück = new JButton("Zurück");
+        zurück.setFont(customFont.deriveFont(16f));
+        zurück.setPreferredSize(new Dimension(200, 30));
+        zurück.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Schließt das Benutzermenü
+            }
+        });
+
+        // Buttons zum Panel hinzufügen
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
+        backgroundPanel.add(persönlicheDaten, gbc);
+
+        gbc.gridy = 1;
+        backgroundPanel.add(passwortEinstellungen, gbc);
+
+        gbc.gridy = 2;
+        backgroundPanel.add(zurück, gbc);
+
+        // Panel dem Frame hinzufügen
+        add(backgroundPanel, BorderLayout.CENTER);
+
+        // Fenster-Einstellungen
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null); // Fenster zentrieren
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new benutzerMenu());
+    }
+}
