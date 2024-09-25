@@ -1,0 +1,41 @@
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+
+public class gleitzeitkonto extends JFrame {
+
+    private JPanel hintergrundBild;
+    private Font customFont;
+
+    public gleitzeitkonto() {
+        setTitle("Gleitzeitkonto");
+        setSize(600, 500);
+        setLayout(new BorderLayout());
+
+        JPanel hintergrundBild = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon icon = new ImageIcon("ressourcen/hintergrundBBQ-3.jpg");
+                Image img = icon.getImage();
+                g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("ressourcen/KGDoYouLoveMe.ttf"));
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(customFont);
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+            customFont = new Font("Arial", Font.PLAIN, 16);  // Fallback-Schriftart
+        }
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null); // Fenster zentrieren
+        setVisible(true);
+    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new benutzerMenu());
+    }
+}
