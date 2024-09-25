@@ -1,82 +1,108 @@
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 public class GUI extends JFrame {
-
     private JButton kommenButton;
     private JButton gehenButton;
     private JLabel gearbeiteteStunden;
+    private JButton benutzer;
+    private Font customFont;
+    private JButton gleitzeitkonto;
 
     public GUI() {
         setTitle("Zeiterfassungsprogramm");
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("ressourcen/KGDoYouLoveMe.ttf"));
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(customFont);
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+        }
 
-        setLayout(new BorderLayout());
+        // Hintergrundbild-Panel
+        hintergrund backgroundPanel = new hintergrund("ressourcen/hintergrundBBQ-3.jpg");
+        backgroundPanel.setLayout(new BorderLayout());
+        setContentPane(backgroundPanel);
 
-        // Anzeige gearbeitete Stunden
-        JPanel countdownPanel = new JPanel();
-        countdownPanel.setLayout(new BorderLayout());
-        countdownPanel.setBorder(BorderFactory.createEmptyBorder(85, 10, 10, 10));
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(35, 10, 10, 10));
 
-        JLabel heuteGearbeitetLabel = new JLabel("HEUTE GEARBEITET", SwingConstants.CENTER);
-        heuteGearbeitetLabel.setFont(new Font("Abadi MS", Font.BOLD, 16));
-        countdownPanel.add(heuteGearbeitetLabel, BorderLayout.NORTH);
+        JPanel arbeitszeitPanel = new JPanel(new BorderLayout());
+        arbeitszeitPanel.setOpaque(false);
+        arbeitszeitPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
-        gearbeiteteStunden = new JLabel("00:00:00", SwingConstants.CENTER);
-        gearbeiteteStunden.setFont(new Font("Abadi MS", Font.BOLD, 24));
-        gearbeiteteStunden.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        gearbeiteteStunden.setPreferredSize(new Dimension(100, 50));
-        countdownPanel.add(gearbeiteteStunden, BorderLayout.CENTER);
+        gearbeiteteStunden = new JLabel("Heute gearbeitet", SwingConstants.CENTER);
+        gearbeiteteStunden.setFont(customFont.deriveFont(40f));
+        gearbeiteteStunden.setForeground(Color.WHITE);
+        arbeitszeitPanel.add(gearbeiteteStunden, BorderLayout.NORTH);
+        JLabel countdown = new JLabel("00:00:00", SwingConstants.CENTER);
+        countdown.setFont(new Font("Abadi MS", Font.PLAIN, 45));
+        countdown.setForeground(Color.white);
+        arbeitszeitPanel.add(countdown, BorderLayout.CENTER);
+        topPanel.add(arbeitszeitPanel, BorderLayout.CENTER);
 
-        add(countdownPanel, BorderLayout.NORTH);
+        // Panel für die Buttons "Kommen" und "Gehen"
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Horizontal anordnen
+        buttonPanel.setOpaque(false);
 
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        ImageIcon kommenIcon = new ImageIcon("/Users/manuelazecic/Downloads/soldier-2676585_1280.png");
-        ImageIcon gehenIcon = new ImageIcon("/Users/manuelazecic/Downloads/soldier-2676586_1280.png");
-        Image scaledKommenIcon = kommenIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-        Image scaledGehenIcon = gehenIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-
-        // Kommen
-        kommenButton = new JButton("Kommen", new ImageIcon(scaledKommenIcon));
-        kommenButton.setFont(new Font("Abadi MS", Font.PLAIN, 16));
+        // Kommen Button
+        kommenButton = new JButton("Kommen");
+        kommenButton.setFont(customFont.deriveFont(20f));
+        kommenButton.setPreferredSize(new Dimension(120, 40)); // Breite und Höhe einstellen
         buttonPanel.add(kommenButton);
-        kommenButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(GUI.this,"Kommen-Button geklickt.");
-            }
-        });
 
-        // Gehen
-        gehenButton = new JButton("Gehen", new ImageIcon(scaledGehenIcon));
-        gehenButton.setFont(new Font("Abadi MS", Font.PLAIN, 16));
+        // Gehen Button
+        gehenButton = new JButton("Gehen");
+        gehenButton.setFont(customFont.deriveFont(20f));
+        gehenButton.setPreferredSize(new Dimension(120, 40)); // Breite und Höhe einstellen
         buttonPanel.add(gehenButton);
-        gehenButton.addActionListener(new ActionListener() {
+
+        // Füge das Button-Panel zu topPanel hinzu
+        topPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Benutzer-Icon
+        ImageIcon benutzerIcon = new ImageIcon("ressourcen/userIcon-2.jpg");
+        Image image = benutzerIcon.getImage();
+        Image scaledImage = image.getScaledInstance(130, 130, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        benutzer = new JButton(scaledIcon);
+        JPanel buttonPanelRechtsOben = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanelRechtsOben.setBorder(BorderFactory.createEmptyBorder(48, 30, 0, 83));
+        buttonPanelRechtsOben.add(benutzer);
+        buttonPanelRechtsOben.setOpaque(false);
+
+        benutzer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog(GUI.this,"Gehen-Button geklickt.");
+                new benutzerMenu();
             }
         });
 
+        topPanel.add(buttonPanelRechtsOben, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
 
-        add(buttonPanel, BorderLayout.CENTER);
+        // Gleitzeitkonto Panel
+        JPanel gleitzeitPanel = new JPanel();
+        gleitzeitPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        gleitzeitPanel.setOpaque(false); // Damit das Panel transparent bleibt
 
-        // Tabelle
-        String[] spalten = {"Datum", "Gearbeitet von-bis", "Saldo"};
-        DefaultTableModel model = new DefaultTableModel(spalten, 0);
-        JTable gleitzeitkonto = new JTable(model);
-        JScrollPane scrollPane = new JScrollPane(gleitzeitkonto);
+        gleitzeitkonto = new JButton("Gleitzeitkonto");
+        gleitzeitkonto.setFont(customFont.deriveFont(25f));
+        gleitzeitkonto.setPreferredSize(new Dimension(150, 50)); // Breite und Höhe einstellen
+        gleitzeitPanel.add(gleitzeitkonto);
+        gleitzeitkonto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new gleitzeitkonto();
+            }
+        });
 
-        scrollPane.setPreferredSize(new Dimension(800, 150));
-        add(scrollPane, BorderLayout.SOUTH);
-
-        gleitzeitkonto.setShowGrid(true);
-        gleitzeitkonto.setGridColor(Color.BLACK);
-
+        add(gleitzeitPanel, BorderLayout.CENTER); // Gleitzeitkonto Panel zum Haupt-Frame hinzufügen
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -84,6 +110,6 @@ public class GUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        new GUI();
+        SwingUtilities.invokeLater(GUI::new);
     }
 }
