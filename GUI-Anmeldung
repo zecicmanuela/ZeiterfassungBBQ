@@ -2,63 +2,91 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class GUIAnmeldung extends JFrame {
 
     private JTextField benutzernameField;
     private JPasswordField passwortField;
     private JButton loginButton;
+    private Font customFont;
 
     public GUIAnmeldung() {
         setTitle("Login");
-        setSize(400, 300);
-        setLayout(new GridBagLayout());
+        setSize(700, 500);
+        setLayout(new BorderLayout());
+
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon icon = new ImageIcon("ressourcen/hintergrundBBQ-3.jpg");
+                Image img = icon.getImage();
+                g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        backgroundPanel.setLayout(new GridBagLayout()); // Layout für die Anmeldefelder
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
+        // Schriftart laden
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(customFont);
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+            customFont = new Font("Arial", Font.PLAIN, 16);
+        }
+
         // Benutzername Label und Textfeld
         JLabel benutzernameLabel = new JLabel("Benutzername:");
+        benutzernameLabel.setFont(customFont);
+        benutzernameLabel.setForeground(Color.white);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        add(benutzernameLabel, gbc);
+        backgroundPanel.add(benutzernameLabel, gbc);
 
         benutzernameField = new JTextField(20);
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(benutzernameField, gbc);
+        backgroundPanel.add(benutzernameField, gbc);
 
         // Passwort Label und Textfeld
         JLabel passwortLabel = new JLabel("Passwort:");
+        passwortLabel.setFont(customFont);
+        passwortLabel.setForeground(Color.white);
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        add(passwortLabel, gbc);
+        backgroundPanel.add(passwortLabel, gbc);
 
         passwortField = new JPasswordField(20);
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(passwortField, gbc);
+        backgroundPanel.add(passwortField, gbc);
 
         // Login Button
         loginButton = new JButton("Login");
+        loginButton.setFont(customFont); // Benutzerdefinierte Schriftart auf den Button anwenden
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.EAST;
         gbc.fill = GridBagConstraints.NONE;
-        add(loginButton, gbc);
+        backgroundPanel.add(loginButton, gbc);
 
-
+        // ActionListener für den Login-Button
         ActionListener loginActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (authenticate(benutzernameField.getText(), new String(passwortField.getPassword()))) {
-                    new GUI();
-                    dispose();
+                    new GUI(); // Öffne das nächste Fenster
+                    dispose(); // Schließt das Login-Fenster
                 } else {
                     JOptionPane.showMessageDialog(GUIAnmeldung.this, "Ungültiger Benutzername oder Passwort!", "Fehler", JOptionPane.ERROR_MESSAGE);
                 }
@@ -66,13 +94,15 @@ public class GUIAnmeldung extends JFrame {
         };
 
         loginButton.addActionListener(loginActionListener);
-
         benutzernameField.addActionListener(loginActionListener);
         passwortField.addActionListener(loginActionListener);
 
+        // Hintergrund-Panel zum Frame hinzufügen
+        add(backgroundPanel, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); // Fenster zentrieren
+        setVisible(true);
     }
 
     // Dummy-Authentifizierungsmethode
@@ -81,11 +111,6 @@ public class GUIAnmeldung extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new GUIAnmeldung().setVisible(true);
-            }
-        });
+        SwingUtilities.invokeLater(() -> new GUIAnmeldung().setVisible(true));
     }
 }
