@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="zeiterfassungBBQ:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/zeiterfassungBBQ_jar</output-path>
+    <root id="archive" name="zeiterfassungBBQ.jar">
+      <element id="module-output" name="zeiterfassungBBQ" />
+    </root>
+  </artifact>
+</component>
