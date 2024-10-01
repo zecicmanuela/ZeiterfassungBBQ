@@ -13,7 +13,7 @@ public class Registrieren extends JFrame {
         this.customFont = customFont;
         this.messages = ResourceBundle.getBundle("ressourcen.messages", Locale.getDefault()); // Sprachbundle laden
         setTitle(messages.getString("register.title"));
-        setSize(700, 500);
+        setSize(900, 800);
         setLayout(new BorderLayout());
 
         JPanel backgroundPanel = createBackgroundPanel();
