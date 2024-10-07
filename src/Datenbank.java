@@ -158,7 +158,7 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
-    //änderungen für commit
+    //änderungen
 
 
     public void schliessen() {
