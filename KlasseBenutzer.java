@@ -12,7 +12,7 @@ public class KlasseBenutzer {
     private int behinderungsGrad;
     private boolean schwangerschaft;
     private String sicherheitsAntwort;  // Antwort auf die Frage "Was ist deine Lieblingsfarbe?"
-    
+    private String email;
 
     //Konstruktor
     public KlasseBenutzer() {
@@ -23,11 +23,11 @@ public class KlasseBenutzer {
         this.behinderungsGrad = 0;
         this.schwangerschaft = false;
         this.sicherheitsAntwort = "";
-
+        this.email = ""; 
     }
 
     //Konstruktor mit Parameter
-    public KlasseBenutzer(String passwort, int alter, int id, String vorname, String nachname, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort) {
+    public KlasseBenutzer(String passwort, int alter, int id, String vorname, String nachname, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort, String email) {
         this.passwort = passwort;
         this.alter = alter;
         this.id = id;
@@ -37,6 +37,7 @@ public class KlasseBenutzer {
         this.behinderungsGrad = behinderungsGrad;
         this.schwangerschaft = schwangerschaft;
         this.sicherheitsAntwort = sicherheitsAntwort;
+        setEmail(email);
     }
 
     public String getPasswort() {
@@ -138,7 +139,23 @@ public class KlasseBenutzer {
         this.sicherheitsAntwort = sicherheitsAntwort;
     }
 
+    // Setter mit Validierung für die E-Mail-Adresse
+    public void setEmail(String email) {
+        if (istEmailGueltig(email)) {
+            this.email = email;
+        } else {
+            throw new IllegalArgumentException("Ungültige E-Mail-Adresse.");
+        }
+    }
+
+    // Methode zur Überprüfung, ob die E-Mail-Adresse gültig ist
+    private boolean istEmailGueltig(String email) {
+        if (email == null || email.isEmpty()) {
+            return false;
+        }
+        // Regex für die Überprüfung einer einfachen E-Mail-Adresse
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        return email.matches(emailRegex);
+    }
 }
-
-
 
