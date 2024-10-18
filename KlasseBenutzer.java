@@ -25,10 +25,11 @@ public class KlasseBenutzer {
     }
 
     //Konstruktor mit Parameter
-    public KlasseBenutzer(String passwort, int alter, String name, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort) {
+    public KlasseBenutzer(String passwort, int alter, String vorname, String nachname, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort) {
         this.passwort = passwort;
         this.alter = alter;
-        this.name = name;
+        this.vorname = vorname;
+        this.nachname = nachname,
         this.arbeitszeitRegelung = arbeitszeitRegelung;
         this.behinderungsGrad = behinderungsGrad;
         this.schwangerschaft = schwangerschaft;
