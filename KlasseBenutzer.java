@@ -5,6 +5,7 @@ public class KlasseBenutzer {
     // Attribute der Klasse
     private String passwort;
     private int alter;
+    private int id;
     private String vorname;
     private String nachname;
     private String arbeitszeitRegelung;
@@ -25,9 +26,10 @@ public class KlasseBenutzer {
     }
 
     //Konstruktor mit Parameter
-    public KlasseBenutzer(String passwort, int alter, String vorname, String nachname, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort) {
+    public KlasseBenutzer(String passwort, int alter, int id; String vorname, String nachname, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort) {
         this.passwort = passwort;
         this.alter = alter;
+        this.id = id;
         this.vorname = vorname;
         this.nachname = nachname,
         this.arbeitszeitRegelung = arbeitszeitRegelung;
@@ -78,12 +80,28 @@ public class KlasseBenutzer {
         this.alter = alter;
     }
 
-    public String getName() {
-        return name;
+    public void getId() {
+        this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getVorname() {
+        return vorname;
+    }
+
+    public void setVorname(String vorname) {
+        this.vornamename = vorname;
+    }
+
+     public String getNachname() {
+        return nachname;
+    }
+
+    public void setNachname(String nachname) {
+        this.nachnamename = nachname;
     }
 
     public String getArbeitszeitRegelung() {
