@@ -12,6 +12,7 @@ public class KlasseBenutzer {
     private int behinderungsGrad;
     private boolean schwangerschaft;
     private String sicherheitsAntwort;  // Antwort auf die Frage "Was ist deine Lieblingsfarbe?"
+    
 
     //Konstruktor
     public KlasseBenutzer() {
@@ -26,7 +27,7 @@ public class KlasseBenutzer {
     }
 
     //Konstruktor mit Parameter
-    public KlasseBenutzer(String passwort, int alter, int id; String vorname, String nachname, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort) {
+    public KlasseBenutzer(String passwort, int alter, int id, String vorname, String nachname, String arbeitszeitRegelung, int behinderungsGrad, boolean schwangerschaft, String sicherheitsAntwort) {
         this.passwort = passwort;
         this.alter = alter;
         this.id = id;
@@ -93,7 +94,7 @@ public class KlasseBenutzer {
     }
 
     public void setVorname(String vorname) {
-        this.vornamename = vorname;
+        this.vorname = vorname;
     }
 
      public String getNachname() {
@@ -101,7 +102,7 @@ public class KlasseBenutzer {
     }
 
     public void setNachname(String nachname) {
-        this.nachnamename = nachname;
+        this.nachname = nachname;
     }
 
     public String getArbeitszeitRegelung() {
