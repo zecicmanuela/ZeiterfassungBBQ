@@ -5,7 +5,8 @@ public class KlasseBenutzer {
     // Attribute der Klasse
     private String passwort;
     private int alter;
-    private String name;
+    private String vorname;
+    private String nachname;
     private String arbeitszeitRegelung;
     private int behinderungsGrad;
     private boolean schwangerschaft;
