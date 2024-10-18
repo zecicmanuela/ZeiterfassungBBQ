@@ -1,4 +1,3 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.imageio.ImageIO;
 
 public class GUI extends JFrame {
     private JButton kommenButton;
@@ -54,9 +54,6 @@ public class GUI extends JFrame {
         gearbeiteteStunden.setForeground(Color.WHITE);
         arbeitszeitPanel.add(gearbeiteteStunden, BorderLayout.NORTH);
 
-        JButton deutsch = createFlagButton("src/ressourcen/deutscheFlagge.png", new Locale("de", "DE"));
-        JButton english = createFlagButton("src/ressourcen/UK-Flagge.png", new Locale("en", "UK"));
-
         JLabel countdown = new JLabel("00:00:00", SwingConstants.CENTER);
         countdown.setFont(new Font("Abadi MS", Font.PLAIN, 45));
         countdown.setForeground(Color.white);
@@ -100,13 +97,17 @@ public class GUI extends JFrame {
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         benutzer = new JButton(scaledIcon);
 
+        JButton deutsch = createFlagButton("src/ressourcen/deutscheFlagge.png", new Locale("de", "DE"));
+        JButton english = createFlagButton("src/ressourcen/UK-Flagge.png", new Locale("en", "UK"));
+
+
         // Panel für den Benutzer-Button
         JPanel buttonPanelRechtsOben = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanelRechtsOben.setBorder(BorderFactory.createEmptyBorder(48, 30, 0, 83));
         buttonPanelRechtsOben.add(benutzer);
+        buttonPanelRechtsOben.setOpaque(false);
         buttonPanelRechtsOben.add(deutsch);
         buttonPanelRechtsOben.add(english);
-        buttonPanelRechtsOben.setOpaque(false);
 
         benutzer.addActionListener(new ActionListener() {
             @Override
@@ -119,11 +120,57 @@ public class GUI extends JFrame {
         topPanel.add(buttonPanelRechtsOben, BorderLayout.NORTH);
         add(topPanel, BorderLayout.NORTH);
 
-
         setVisible(true);
     }
 
-    // Methode zur Erstellung eines Flaggen-Buttons
+
+    private void showPopupArbeitszeitUeberschritten() {
+        String title = bundle.getString("popup.title.overtime");
+        String message = bundle.getString("popup.message.overtime");
+        showWarningPopup(title, message);
+    }
+
+
+    private void showPopupZuWenigStunden() {
+        String title = bundle.getString("popup.title.tooFewHours");
+        String message = bundle.getString("popup.message.tooFewHours");
+        showWarningPopup(title, message);
+    }
+
+
+    private void showPopupZuVieleStunden() {
+        String title = bundle.getString("popup.title.tooManyHours");
+        String message = bundle.getString("popup.message.tooManyHours");
+        showWarningPopup(title, message);
+    }
+
+
+    private void showWarningPopup(String title, String message) {
+        JDialog dialog = new JDialog(this, title, true);
+        dialog.setSize(400, 200);
+
+        // Hintergrundbild setzen
+        JPanel contentPanel = new Hintergrund("src/ressourcen/hintergrundBBQ-3.jpg");
+        contentPanel.setLayout(new BorderLayout());
+
+        JLabel messageLabel = new JLabel("<html><center>" + message + "</center></html>", SwingConstants.CENTER);
+        messageLabel.setFont(customFont.deriveFont(20f));
+        messageLabel.setForeground(Color.WHITE);
+        contentPanel.add(messageLabel, BorderLayout.CENTER);
+
+        JButton okButton = new JButton("OK");
+        okButton.setFont(customFont.deriveFont(16f));
+        okButton.addActionListener(e -> dialog.dispose());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(okButton);
+        buttonPanel.setOpaque(false);
+
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setContentPane(contentPanel);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
     private JButton createFlagButton(String path, Locale locale) {
         JButton button = new JButton();
         try {
@@ -138,12 +185,9 @@ public class GUI extends JFrame {
         button.setBorderPainted(false); // Rahmen des Buttons entfernen
 
         // ActionListener für Sprachwechsel
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentLocale = locale;
-                updateLabels();
-            }
+        button.addActionListener(e -> {
+            currentLocale = locale;
+            updateLabels();
         });
 
         return button;
