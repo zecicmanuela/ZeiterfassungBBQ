@@ -81,8 +81,8 @@ public class KlasseBenutzer {
         this.alter = alter;
     }
 
-    public void getId() {
-        this.id = id;
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
