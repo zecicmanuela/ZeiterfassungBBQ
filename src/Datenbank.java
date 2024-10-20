@@ -1,5 +1,8 @@
 import java.sql.*;
 import java.sql.DriverManager;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 public class Datenbank {
     Connection connection;
@@ -11,9 +14,9 @@ public class Datenbank {
             System.out.println("DOPPELT gestartet du Depp.");
             return;
         }
-        String url = "jdbc:mysql://192.168.178.21:3306/bbq_arbeitszeit";
-        String name = "admin";
-        String password = "admin";
+        String url = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7738862";
+        String name = "sql7738862";
+        String password = "mYpStnlpAV";
 
         try {
             connection = DriverManager.getConnection(url, name, password);
@@ -30,7 +33,6 @@ public class Datenbank {
 
         statement.execute(query);
     }
-
 
     public void addArbeitszeit(int mitarbeiterId, String datum, String arbeitsbeginn, String arbeitsende, boolean istUeberzeit) throws SQLException {
         String query = "INSERT INTO arbeitszeiten (mitarbeiter_id, datum, arbeitsbeginn, arbeitsende, ist_ueberzeit) " +
@@ -102,6 +104,37 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
+    public void heuteGearbeiteteZeit(int mitarbeiterId, String datum) throws SQLException {
+        // SQL-Abfrage, um Arbeitsbeginn und Arbeitsende für den heutigen Tag zu erhalten
+        String query = "SELECT arbeitsbeginn, arbeitsende FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        if (resultSet.next()) {
+            String arbeitsbeginn = resultSet.getString("arbeitsbeginn");
+            String arbeitsende = resultSet.getString("arbeitsende");
+
+            // Prüfen, ob Arbeitsende vorhanden ist (d.h. ob der Mitarbeiter bereits gegangen ist)
+            if (arbeitsende != null) {
+                // Umwandlung von Strings in LocalTime, um die Zeitdifferenz zu berechnen
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                LocalTime startTime = LocalTime.parse(arbeitsbeginn, formatter);
+                LocalTime endTime = LocalTime.parse(arbeitsende, formatter);
+
+                // Berechne die Dauer zwischen Arbeitsbeginn und Arbeitsende
+                Duration duration = Duration.between(startTime, endTime);
+                long stunden = duration.toHours();
+                long minuten = duration.toMinutes() % 60;
+
+                System.out.println("Heute gearbeitete Zeit: " + stunden + " Stunden und " + minuten + " Minuten.");
+            } else {
+                // Wenn Arbeitsende noch nicht gesetzt ist, gibt nur den Arbeitsbeginn aus
+                System.out.println("Mitarbeiter ist noch am Arbeiten. Arbeitsbeginn war um: " + arbeitsbeginn);
+            }
+        } else {
+            System.out.println("Keine Arbeitszeiten für den heutigen Tag gefunden.");
+        }
+    }
+
     public void mitarbeiterKommt(int mitarbeiterId, String datum, String arbeitsbeginn) throws SQLException {
         // Prüfen, ob für den aktuellen Tag bereits ein Arbeitsbeginn existiert
         String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
@@ -140,7 +173,7 @@ public class Datenbank {
 
         // Wenn ein Datensatz zurückgegeben wird, ist die Anmeldung erfolgreich
         if (resultSet.next()) {
-            JOptionPane.showMessageDialog(null,"Anmeldung erfolgreich: Willkommen " + resultSet.getString("vorname") + " " + resultSet.getString("nachname"));
+            JOptionPane.showMessageDialog(null, "Anmeldung erfolgreich: Willkommen " + resultSet.getString("vorname") + " " + resultSet.getString("nachname"));
             return true;
         } else {
             // Falls kein Treffer, Anmeldung fehlgeschlagen
@@ -158,7 +191,6 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
-    //änderungen
 
 
     public void schliessen() {
