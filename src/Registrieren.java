@@ -75,38 +75,51 @@ public class Registrieren extends JFrame {
         gbc.gridy = 1;
         backgroundPanel.add(vornameField, gbc);
 
+        JLabel emailLabel = new JLabel("E-Mail");
+        emailLabel.setFont(customFont);
+        emailLabel.setForeground(Color.white);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        backgroundPanel.add(emailLabel, gbc);
+
+        JTextField emailField = new JTextField(20);
+        emailField.setFont(customFont);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        backgroundPanel.add(emailField, gbc);
+
         JLabel geburtsdatumLabel = new JLabel(messages.getString("register.geburtsdatum"));
         geburtsdatumLabel.setFont(customFont);
         geburtsdatumLabel.setForeground(Color.white);
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         backgroundPanel.add(geburtsdatumLabel, gbc);
 
         JTextField geburtsdatumField = new JTextField(20);
         geburtsdatumField.setFont(customFont);
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         backgroundPanel.add(geburtsdatumField, gbc);
 
         JLabel zeitmodellLabel = new JLabel(messages.getString("register.zeitmodell"));
         zeitmodellLabel.setFont(customFont);
         zeitmodellLabel.setForeground(Color.white);
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         backgroundPanel.add(zeitmodellLabel, gbc);
 
         String[] zeitmodelle = {messages.getString("zeitmodell.vollzeit"), messages.getString("zeitmodell.teilzeit"), messages.getString("zeitmodell.minijob")};
         JComboBox<String> zeitmodellComboBox = new JComboBox<>(zeitmodelle);
         zeitmodellComboBox.setFont(customFont);
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         backgroundPanel.add(zeitmodellComboBox, gbc);
 
         JLabel behinderungsgradLabel = new JLabel(messages.getString("register.behinderungsgrad"));
         behinderungsgradLabel.setFont(customFont);
         behinderungsgradLabel.setForeground(Color.white);
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         backgroundPanel.add(behinderungsgradLabel, gbc);
 
         JSlider behinderungsgradSlider = new JSlider(0, 100);
@@ -114,38 +127,38 @@ public class Registrieren extends JFrame {
         behinderungsgradSlider.setPaintTicks(true);
         behinderungsgradSlider.setMajorTickSpacing(20);
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         backgroundPanel.add(behinderungsgradSlider, gbc);
 
         JLabel passwortLabel = new JLabel(messages.getString("register.passwort"));
         passwortLabel.setFont(customFont);
         passwortLabel.setForeground(Color.white);
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         backgroundPanel.add(passwortLabel, gbc);
 
         JLabel bestätigungPasswortLabel = new JLabel(messages.getString("register.bestätigung"));
         bestätigungPasswortLabel.setFont(customFont);
         bestätigungPasswortLabel.setForeground(Color.WHITE);
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         backgroundPanel.add(bestätigungPasswortLabel, gbc);
 
         JPasswordField passwortField = new JPasswordField(20);
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         backgroundPanel.add(passwortField, gbc);
 
         JPasswordField passwortBestätigung = new JPasswordField(20);
         gbc.gridx = 1;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         backgroundPanel.add(passwortBestätigung, gbc);
 
         JLabel sicherheitsfrage = new JLabel(messages.getString("register.sicherheitsfrage"));
         sicherheitsfrage.setFont(customFont);
         sicherheitsfrage.setForeground(Color.WHITE);
         gbc.gridx = 0;
-        gbc.gridy = 7;
+        gbc.gridy = 8;
         backgroundPanel.add(sicherheitsfrage, gbc);
 
         String[] sicherheitsfragen = {
@@ -156,20 +169,20 @@ public class Registrieren extends JFrame {
         JComboBox<String> sicherheitsfragenComboBox = new JComboBox<>(sicherheitsfragen);
         sicherheitsfragenComboBox.setFont(customFont);
         gbc.gridx = 1;
-        gbc.gridy = 7;
+        gbc.gridy = 8;
         backgroundPanel.add(sicherheitsfragenComboBox, gbc);
 
         JLabel antwort = new JLabel(messages.getString("register.antwort"));
         antwort.setFont(customFont);
         antwort.setForeground(Color.WHITE);
         gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         backgroundPanel.add(antwort, gbc);
 
         JTextField antwortFeld = new JTextField(20);
         antwortFeld.setFont(customFont);
         gbc.gridx = 1;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         backgroundPanel.add(antwortFeld, gbc);
 
     }
