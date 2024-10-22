@@ -17,6 +17,10 @@ public class GUI extends JFrame {
     private JButton gleitzeitkonto;
     private ResourceBundle bundle;
     private Locale currentLocale;
+    private Timer timer; // Timer für den Countdown
+    private int elapsedSeconds = 0; // Zeit in Sekunden
+    private JLabel countdown; // Countdown-Label
+
     Datenbank datenbank = new Datenbank();
 
     public GUI(Locale locale) {
@@ -55,7 +59,8 @@ public class GUI extends JFrame {
         gearbeiteteStunden.setForeground(Color.WHITE);
         arbeitszeitPanel.add(gearbeiteteStunden, BorderLayout.NORTH);
 
-        JLabel countdown = new JLabel("00:00:00", SwingConstants.CENTER);
+        // Countdown Label
+        countdown = new JLabel("00:00:00", SwingConstants.CENTER);
         countdown.setFont(new Font("Abadi MS", Font.PLAIN, 45));
         countdown.setForeground(Color.white);
         arbeitszeitPanel.add(countdown, BorderLayout.CENTER);
@@ -68,13 +73,6 @@ public class GUI extends JFrame {
         kommenButton = new JButton(bundle.getString("button.come"));
         kommenButton.setFont(customFont.deriveFont(20f));
         buttonPanel.add(kommenButton);
-        /*
-        kommenButton.addActionListener(e -> {
-                datenbank.starten();
-                datenbank.mitarbeiterKommt("1")
-
-                });
-        */
 
         // Gehen-Button
         gehenButton = new JButton(bundle.getString("button.go"));
@@ -108,7 +106,6 @@ public class GUI extends JFrame {
         JButton deutsch = createFlagButton("src/ressourcen/deutscheFlagge.png", new Locale("de", "DE"));
         JButton english = createFlagButton("src/ressourcen/UK-Flagge.png", new Locale("en", "UK"));
 
-
         // Panel für den Benutzer-Button
         JPanel buttonPanelRechtsOben = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanelRechtsOben.setBorder(BorderFactory.createEmptyBorder(48, 30, 0, 83));
@@ -120,7 +117,7 @@ public class GUI extends JFrame {
         benutzer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Benutzer-Menü öffne
+                // Benutzer-Menü öffnen
                 new benutzerMenu(currentLocale);
             }
         });
@@ -128,55 +125,40 @@ public class GUI extends JFrame {
         topPanel.add(buttonPanelRechtsOben, BorderLayout.NORTH);
         add(topPanel, BorderLayout.NORTH);
 
+        // Timer konfigurieren
+        timer = new Timer(1000, new ActionListener() { // 1000 ms = 1 Sekunde
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                elapsedSeconds++;
+                updateCountdownLabel();
+            }
+        });
+
+        // ActionListener für den Kommen-Button (Timer starten)
+        kommenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timer.start();
+            }
+        });
+
+        // ActionListener für den Gehen-Button (Timer stoppen)
+        gehenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timer.stop();
+            }
+        });
+
         setVisible(true);
     }
 
-
-    private void showPopupArbeitszeitUeberschritten() {
-        String title = bundle.getString("popup.title.overtime");
-        String message = bundle.getString("popup.message.overtime");
-        showWarningPopup(title, message);
-    }
-
-
-    private void showPopupZuWenigStunden() {
-        String title = bundle.getString("popup.title.tooFewHours");
-        String message = bundle.getString("popup.message.tooFewHours");
-        showWarningPopup(title, message);
-    }
-
-
-    private void showPopupZuVieleStunden() {
-        String title = bundle.getString("popup.title.tooManyHours");
-        String message = bundle.getString("popup.message.tooManyHours");
-        showWarningPopup(title, message);
-    }
-
-
-    private void showWarningPopup(String title, String message) {
-        JDialog dialog = new JDialog(this, title, true);
-        dialog.setSize(400, 200);
-
-        // Hintergrundbild setzen
-        JPanel contentPanel = new Hintergrund("src/ressourcen/hintergrundBBQ-3.jpg");
-        contentPanel.setLayout(new BorderLayout());
-
-        JLabel messageLabel = new JLabel("<html><center>" + message + "</center></html>", SwingConstants.CENTER);
-        messageLabel.setFont(customFont.deriveFont(20f));
-        messageLabel.setForeground(Color.WHITE);
-        contentPanel.add(messageLabel, BorderLayout.CENTER);
-
-        JButton okButton = new JButton("OK");
-        okButton.setFont(customFont.deriveFont(16f));
-        okButton.addActionListener(e -> dialog.dispose());
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
-        buttonPanel.setOpaque(false);
-
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-        dialog.setContentPane(contentPanel);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
+    // Methode, um das Countdown-Label zu aktualisieren
+    private void updateCountdownLabel() {
+        int hours = elapsedSeconds / 3600;
+        int minutes = (elapsedSeconds % 3600) / 60;
+        int seconds = elapsedSeconds % 60;
+        countdown.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
     }
 
     private JButton createFlagButton(String path, Locale locale) {
@@ -217,7 +199,6 @@ public class GUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Sprache vom Login übernehmen
         Locale locale = new Locale("de", "DE"); // Standardmäßig Deutsch
         SwingUtilities.invokeLater(() -> new GUI(locale));
     }
