@@ -4,8 +4,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.PropertyResourceBundle;
 
 public class GUIAnmeldung extends JFrame {
 
@@ -20,6 +22,7 @@ public class GUIAnmeldung extends JFrame {
     private JButton passwortVergessen;
     private Font customFont;
     private ResourceBundle messages;
+    Datenbank datenbank = new Datenbank();
 
     public GUIAnmeldung() {
         setTitle("Login");
@@ -114,11 +117,16 @@ public class GUIAnmeldung extends JFrame {
         backgroundPanel.add(loginButton, gbc);
 
         ActionListener loginActionListener = e -> {
-            if (authenticate(benutzernameField.getText(), new String(passwortField.getPassword()))) {
-                new GUI(Locale.getDefault()); // Hier wird das GUI-Fenster geöffnet
-                dispose(); // Schließt das Login-Fenster
-            } else {
-                JOptionPane.showMessageDialog(GUIAnmeldung.this, messages.getString("login.error"), "Fehler", JOptionPane.ERROR_MESSAGE);
+            try {
+                datenbank.starten();
+                if (datenbank.mitarbeiterAnmelden(benutzernameField.getText(), new String(passwortField.getPassword()))) {
+                    new GUI(Locale.getDefault()); // Hier wird das GUI-Fenster geöffnet
+                    dispose(); // Schließt das Login-Fenster
+                } else {
+                    JOptionPane.showMessageDialog(GUIAnmeldung.this, messages.getString("login.error"), "Fehler", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         };
 

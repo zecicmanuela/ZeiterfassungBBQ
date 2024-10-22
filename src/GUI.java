@@ -17,6 +17,7 @@ public class GUI extends JFrame {
     private JButton gleitzeitkonto;
     private ResourceBundle bundle;
     private Locale currentLocale;
+    Datenbank datenbank = new Datenbank();
 
     public GUI(Locale locale) {
         this.currentLocale = locale;
@@ -67,6 +68,13 @@ public class GUI extends JFrame {
         kommenButton = new JButton(bundle.getString("button.come"));
         kommenButton.setFont(customFont.deriveFont(20f));
         buttonPanel.add(kommenButton);
+        /*
+        kommenButton.addActionListener(e -> {
+                datenbank.starten();
+                datenbank.mitarbeiterKommt("1")
+
+                });
+        */
 
         // Gehen-Button
         gehenButton = new JButton(bundle.getString("button.go"));

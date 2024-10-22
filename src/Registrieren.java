@@ -1,11 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
+import java.util.PropertyResourceBundle;
 public class Registrieren extends JFrame {
 
     private JTextField vornameField;
+    private JTextField nameField = new JTextField(20);
+    private JTextField emailField = new JTextField(20);
+    private JPasswordField passwortField = new JPasswordField(20);
+    private JPasswordField passwortBestätigung = new JPasswordField(20);
+    private JComboBox<String> zeitmodellComboBox = new JComboBox<>();
+    private JComboBox<String> sicherheitsfragenComboBox = new JComboBox<>();
+    private JTextField antwortFeld = new JTextField();
+    Datenbank datenbank = new Datenbank();
     private final Font customFont;
     private final ResourceBundle messages;
 
@@ -55,7 +66,6 @@ public class Registrieren extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         backgroundPanel.add(nameLabel, gbc);
 
-        JTextField nameField = new JTextField(20);
         nameField.setFont(customFont);
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -82,7 +92,7 @@ public class Registrieren extends JFrame {
         gbc.gridy = 2;
         backgroundPanel.add(emailLabel, gbc);
 
-        JTextField emailField = new JTextField(20);
+
         emailField.setFont(customFont);
         gbc.gridx = 1;
         gbc.gridy = 2;
@@ -144,12 +154,11 @@ public class Registrieren extends JFrame {
         gbc.gridy = 7;
         backgroundPanel.add(bestätigungPasswortLabel, gbc);
 
-        JPasswordField passwortField = new JPasswordField(20);
+
         gbc.gridx = 1;
         gbc.gridy = 6;
         backgroundPanel.add(passwortField, gbc);
 
-        JPasswordField passwortBestätigung = new JPasswordField(20);
         gbc.gridx = 1;
         gbc.gridy = 7;
         backgroundPanel.add(passwortBestätigung, gbc);
@@ -191,14 +200,75 @@ public class Registrieren extends JFrame {
         JButton speichernButton = new JButton(messages.getString("register.speichern"));
         speichernButton.setFont(customFont);
         gbc.gridx = 1;
-        gbc.gridy = 9;
+        gbc.gridy = 10;
         gbc.anchor = GridBagConstraints.EAST;
         backgroundPanel.add(speichernButton, gbc);
 
         speichernButton.addActionListener(e -> {
             String vorname = vornameField.getText();
             JOptionPane.showMessageDialog(this, messages.getString("register.welcome") + " " + vorname + "!", messages.getString("register.title"), JOptionPane.INFORMATION_MESSAGE);
+            speichernMitarbeiter();
             dispose();
         });
     }
+    private void speichernMitarbeiter() {
+        System.out.println("Wir waren hier");
+        try {
+            // Benutzereingaben aus den Feldern holen
+            String vorname = vornameField.getText();
+            String nachname = nameField.getText();
+            String email = emailField.getText();
+            String passwort = new String(passwortField.getPassword());
+            String passwortBestätigungText = new String(passwortBestätigung.getPassword());
+
+            // Überprüfen, ob Passwort und Bestätigung übereinstimmen
+            if (!passwort.equals(passwortBestätigungText)) {
+                JOptionPane.showMessageDialog(this, messages.getString("register.passwort_mismatch"), messages.getString("error"), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Passwort hashen
+            //String passwortHash = hashPasswort(passwort);
+
+            int wochenstunden = 40;
+
+            // Zeitmodell (Vollzeit, Teilzeit, Minijob)
+            /*
+            String zeitmodell = (String) zeitmodellComboBox.getSelectedItem();
+            int wochenstunden = zeitmodell.equals(messages.getString("zeitmodell.vollzeit")) ? 40 :
+                    zeitmodell.equals(messages.getString("zeitmodell.teilzeit")) ? 20 : 10;
+                    */
+
+            // Standardwert für gleitzeitWarnungGrenze (kann angepasst werden)
+            double gleitzeitWarnungGrenze = 5.0;
+            datenbank.starten();
+            datenbank.addMitarbeiter(vorname, nachname, email, passwort, Locale.getDefault().getLanguage(), wochenstunden, gleitzeitWarnungGrenze);
+            datenbank.schliessen();
+            // Erfolgsmeldung anzeigen
+            JOptionPane.showMessageDialog(this, messages.getString("register.success"), messages.getString("register.title"), JOptionPane.INFORMATION_MESSAGE);
+            dispose();  // Fenster schließen
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, messages.getString("register.db_error"), messages.getString("error"), JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private String hashPasswort(String passwort) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(passwort.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
