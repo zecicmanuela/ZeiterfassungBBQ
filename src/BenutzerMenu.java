@@ -10,6 +10,7 @@ public class BenutzerMenu extends JFrame {
     private Font customFont;
     private JButton passwortÄnderung;
     private JButton datenÄnderung;
+    Datenbank datenbank = new Datenbank();
 
     public BenutzerMenu(Locale locale) {
         // Setze das Locale und lade die entsprechenden Nachrichten

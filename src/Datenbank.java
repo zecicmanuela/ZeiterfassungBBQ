@@ -12,9 +12,9 @@ public class Datenbank {
             System.out.println("DOPPELT gestartet du Depp.");
             return;
         }
-        String url = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7738862";
-        String name = "sql7738862";
-        String password = "mYpStnlpAV";
+        String url = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7741225";
+        String name = "sql7741225";
+        String password = "tirDqa4QMX";
 
         try {
             connection = DriverManager.getConnection(url, name, password);

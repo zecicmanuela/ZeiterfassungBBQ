@@ -22,6 +22,8 @@ public class GUI extends JFrame {
     private JLabel countdown; // Countdown-Label
 
     Datenbank datenbank = new Datenbank();
+    Benutzer klasseBenutzer = new Benutzer();
+    Arbeitszeitgesetz arbeitszeitgesetz = new Arbeitszeitgesetz(klasseBenutzer);
 
     public GUI(Locale locale) {
         this.currentLocale = locale;
