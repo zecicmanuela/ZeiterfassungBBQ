@@ -16,7 +16,7 @@ public class Gleitzeitkonto extends JFrame {
 
     public Gleitzeitkonto(Locale locale) {
         setTitle("Gleitzeitkonto");
-        setSize(600, 500);
+        setSize(700, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null); // Fenster zentrieren
 
@@ -24,7 +24,7 @@ public class Gleitzeitkonto extends JFrame {
         loadCustomFont();
 
         // ResourceBundle laden
-        loadBundle(locale); // Lade das ResourceBundle hier
+        loadBundle(locale);
 
         // Hintergrundpanel mit Bild
         JPanel backgroundPanel = createBackgroundPanel();
@@ -81,6 +81,34 @@ public class Gleitzeitkonto extends JFrame {
         contentPanel.add(stundenLabel);
         contentPanel.add(imageLabel);
 
+        // Radiobuttons für "Woche", "Monat" und "Jahr"
+        JRadioButton wocheRadioButton = new JRadioButton(bundle.getString("radio.week"));
+        JRadioButton monatRadioButton = new JRadioButton(bundle.getString("radio.month"));
+        JRadioButton jahrRadioButton = new JRadioButton(bundle.getString("radio.year"));
+
+
+        wocheRadioButton.setFont(customFont.deriveFont(21f));
+        wocheRadioButton.setForeground(Color.WHITE);
+        monatRadioButton.setFont(customFont.deriveFont(21f));
+        monatRadioButton.setForeground(Color.WHITE);
+        jahrRadioButton.setFont(customFont.deriveFont(21f));
+        jahrRadioButton.setForeground(Color.white);
+
+        // ButtonGroup
+        ButtonGroup zeitraumGroup = new ButtonGroup();
+        zeitraumGroup.add(wocheRadioButton);
+        zeitraumGroup.add(monatRadioButton);
+        zeitraumGroup.add(jahrRadioButton);
+
+
+        JPanel radioPanel = new JPanel(new GridLayout(1, 3, 10, 0));
+        radioPanel.setOpaque(false);
+        radioPanel.add(wocheRadioButton);
+        radioPanel.add(monatRadioButton);
+        radioPanel.add(jahrRadioButton);
+
+
+        backgroundPanel.add(radioPanel, BorderLayout.NORTH);
         backgroundPanel.add(contentPanel, BorderLayout.CENTER);
 
         // Button zum Aktualisieren der Stunden
