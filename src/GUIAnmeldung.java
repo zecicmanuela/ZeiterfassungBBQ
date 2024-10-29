@@ -118,8 +118,10 @@ public class GUIAnmeldung extends JFrame {
         ActionListener loginActionListener = e -> {
             try {
                 datenbank.starten();
-                if (datenbank.mitarbeiterAnmelden(benutzernameField.getText(), new String(passwortField.getPassword()))) {
-                    new GUI(Locale.getDefault()); // Hier wird das GUI-Fenster geöffnet
+                String email = datenbank.mitarbeiterAnmelden(benutzernameField.getText(), new String(passwortField.getPassword()));
+
+                if (email != null) {
+                    new GUI(Locale.getDefault(), email); // Übergibt die angemeldete E-Mail
                     dispose(); // Schließt das Login-Fenster
                 } else {
                     JOptionPane.showMessageDialog(GUIAnmeldung.this, messages.getString("login.error"), "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -133,6 +135,7 @@ public class GUIAnmeldung extends JFrame {
         benutzernameField.addActionListener(loginActionListener);
         passwortField.addActionListener(loginActionListener);
     }
+
 
     private void createFlagButtons(JPanel backgroundPanel, GridBagConstraints gbc) {
         JPanel flagPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

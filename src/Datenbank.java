@@ -25,14 +25,20 @@ public class Datenbank {
         }
     }
 
-    public void addMitarbeiter(String vorname, String nachname, String email, String passwort, String sprache, int wochenstunden, double gleitzeitWarnungGrenze) throws SQLException {
-
-        String query = "INSERT INTO mitarbeiter (vorname, nachname, email, passwort_hash, sprache, wochenstunden, gleitzeit_warnung_grenze) " +
-                "VALUES(\"" + vorname + "\", \"" + nachname + "\", \"" + email + "\", \"" + passwort + "\", \"" + sprache + "\", " + wochenstunden + ", " + gleitzeitWarnungGrenze + ")";
-        System.out.println("vorname" + vorname + "\nnach" + nachname + "\nemal" + email + "\npass" + passwort + "\n"+ Locale.getDefault().getLanguage() + wochenstunden + gleitzeitWarnungGrenze);
-        // Aufruf der Datenbank-Methode
-        statement.execute(query);
+    public void addMitarbeiter(String vorname, String nachname, String email, String passwort, String sprache, String wochenstunden, double gleitzeitWarnungGrenze) throws SQLException {
+        String sql = "INSERT INTO mitarbeiter (vorname, nachname, email, passwort, sprache, wochenstunden, gleitzeitWarnungGrenze) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, vorname);
+            stmt.setString(2, nachname);
+            stmt.setString(3, email);
+            stmt.setString(4, passwort);
+            stmt.setString(5, sprache);
+            stmt.setString(6, wochenstunden); // ENUM-Wert hier als String
+            stmt.setDouble(7, gleitzeitWarnungGrenze);
+            stmt.executeUpdate();
+        }
     }
+
 
 
     public void addArbeitszeit(int mitarbeiterId, String datum, String arbeitsbeginn, String arbeitsende, boolean istUeberzeit) throws SQLException {
@@ -105,7 +111,7 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
-    public void mitarbeiterKommt(int mitarbeiterId, String datum, String arbeitsbeginn) throws SQLException {
+    public void mitarbeiterKommt(String mitarbeiterId, String datum, String arbeitsbeginn) throws SQLException {
         // Prüfen, ob für den aktuellen Tag bereits ein Arbeitsbeginn existiert
         String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
         ResultSet resultSet = statement.executeQuery(checkQuery);
@@ -121,7 +127,7 @@ public class Datenbank {
         }
     }
 
-    public void mitarbeiterGeht(int mitarbeiterId, String datum, String arbeitsende) throws SQLException {
+    public void mitarbeiterGeht(String mitarbeiterId, String datum, String arbeitsende) throws SQLException {
         // Prüfen, ob der Mitarbeiter an diesem Tag bereits Arbeitsbeginn hat
         String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
         ResultSet resultSet = statement.executeQuery(checkQuery);
@@ -136,19 +142,18 @@ public class Datenbank {
         }
     }
 
-    public boolean mitarbeiterAnmelden(String email, String passwortHash) throws SQLException {
+    public String mitarbeiterAnmelden(String email, String passwortHash) throws SQLException {
         // SQL-Abfrage zur Überprüfung von E-Mail und Passwort-Hash
         String query = "SELECT * FROM mitarbeiter WHERE email = '" + email + "' AND passwort_hash = '" + passwortHash + "'";
         ResultSet resultSet = statement.executeQuery(query);
 
         // Wenn ein Datensatz zurückgegeben wird, ist die Anmeldung erfolgreich
         if (resultSet.next()) {
-            JOptionPane.showMessageDialog(null,"Anmeldung erfolgreich: Willkommen " + resultSet.getString("vorname") + " " + resultSet.getString("nachname"));
-            return true;
+            JOptionPane.showMessageDialog(null, "Anmeldung erfolgreich: Willkommen " + resultSet.getString("vorname") + " " + resultSet.getString("nachname"));
+            return email;
         } else {
-            // Falls kein Treffer, Anmeldung fehlgeschlagen
-            JOptionPane.showMessageDialog(null,"Anmeldung fehlgeschlagen: Ungültige E-Mail oder Passwort.");
-            return false;
+            JOptionPane.showMessageDialog(null, "Anmeldung fehlgeschlagen: Ungültige E-Mail oder Passwort.");
+            return null; // Anmeldung fehlgeschlagen
         }
     }
 

@@ -118,12 +118,17 @@ public class Registrieren extends JFrame {
         gbc.gridy = 4;
         backgroundPanel.add(zeitmodellLabel, gbc);
 
-        String[] zeitmodelle = {messages.getString("zeitmodell.vollzeit"), messages.getString("zeitmodell.teilzeit"), messages.getString("zeitmodell.minijob")};
-        JComboBox<String> zeitmodellComboBox = new JComboBox<>(zeitmodelle);
+        String[] zeitmodelle = {
+                messages.getString("zeitmodell.vollzeit"),
+                messages.getString("zeitmodell.teilzeit"),
+                messages.getString("zeitmodell.minijob")
+        };
+        zeitmodellComboBox = new JComboBox<>(zeitmodelle); // Hier wird die Instanzvariable verwendet
         zeitmodellComboBox.setFont(customFont);
         gbc.gridx = 1;
         gbc.gridy = 4;
         backgroundPanel.add(zeitmodellComboBox, gbc);
+
 
         JLabel behinderungsgradLabel = new JLabel(messages.getString("register.behinderungsgrad"));
         behinderungsgradLabel.setFont(customFont);
@@ -211,50 +216,42 @@ public class Registrieren extends JFrame {
             dispose();
         });
     }
+
     private void speichernMitarbeiter() {
         System.out.println("Wir waren hier");
-        try {
-            // Benutzereingaben aus den Feldern holen
-            String vorname = vornameField.getText();
-            String nachname = nameField.getText();
-            String email = emailField.getText();
-            String passwort = new String(passwortField.getPassword());
-            String passwortBestätigungText = new String(passwortBestätigung.getPassword());
+        // Benutzereingaben aus den Feldern holen
+        String vorname = vornameField.getText();
+        String nachname = nameField.getText();
+        String email = emailField.getText();
+        String passwort = new String(passwortField.getPassword());
+        String passwortBestätigungText = new String(passwortBestätigung.getPassword());
 
-            // Überprüfen, ob Passwort und Bestätigung übereinstimmen
-            if (!passwort.equals(passwortBestätigungText)) {
-                JOptionPane.showMessageDialog(this, messages.getString("register.passwort_mismatch"), messages.getString("error"), JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        // Überprüfen, ob Passwort und Bestätigung übereinstimmen
+        if (!passwort.equals(passwortBestätigungText)) {
+            JOptionPane.showMessageDialog(this, messages.getString("register.passwort_mismatch"), messages.getString("error"), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            // Passwort hashen
-            //String passwortHash = hashPasswort(passwort);
+        // Holen Sie sich das ausgewählte Zeitmodell
+        String zeitmodell = (String) zeitmodellComboBox.getSelectedItem(); // Hier den Wert abrufen
+        String wochenstunden = "";
 
-            int wochenstunden = 40;
-
-            // Zeitmodell (Vollzeit, Teilzeit, Minijob)
-            /*
-            String zeitmodell = (String) zeitmodellComboBox.getSelectedItem();
-            int wochenstunden = zeitmodell.equals(messages.getString("zeitmodell.vollzeit")) ? 40 :
-                    zeitmodell.equals(messages.getString("zeitmodell.teilzeit")) ? 20 : 10;
-                    */
-
-            // Standardwert für gleitzeitWarnungGrenze (kann angepasst werden)
-            double gleitzeitWarnungGrenze = 5.0;
-            datenbank.starten();
-            datenbank.addMitarbeiter(vorname, nachname, email, passwort, Locale.getDefault().getLanguage(), wochenstunden, gleitzeitWarnungGrenze);
-            datenbank.schliessen();
-            // Erfolgsmeldung anzeigen
-            JOptionPane.showMessageDialog(this, messages.getString("register.success"), messages.getString("register.title"), JOptionPane.INFORMATION_MESSAGE);
-            dispose();  // Fenster schließen
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, messages.getString("register.db_error"), messages.getString("error"), JOptionPane.ERROR_MESSAGE);
+        // Bestimmen Sie die Wochenstunden basierend auf dem Zeitmodell
+        if (zeitmodell.equals(messages.getString("zeitmodell.vollzeit"))) {
+            wochenstunden = "40"; // Diese sollten als Strings übereinstimmen mit ENUM
+        } else if (zeitmodell.equals(messages.getString("zeitmodell.teilzeit"))) {
+            wochenstunden = "20";
+        } else if (zeitmodell.equals(messages.getString("zeitmodell.minijob"))) {
+            wochenstunden = "10";
+        } else {
+            JOptionPane.showMessageDialog(this, "Unbekanntes Zeitmodell", "Fehler", JOptionPane.ERROR_MESSAGE);
+            return;
         }
     }
 
-    private String hashPasswort(String passwort) {
+
+
+            private String hashPasswort(String passwort) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(passwort.getBytes());
