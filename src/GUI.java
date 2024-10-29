@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,6 +15,8 @@ public class GUI extends JFrame {
     private JButton kommenButton;
     private JButton gehenButton;
     private JLabel gearbeiteteStunden;
+    private JButton benutzer;
+    private JButton gleitzeitkonto;
     private Font customFont;
     private ResourceBundle bundle;
     private Locale currentLocale;
@@ -68,6 +71,11 @@ public class GUI extends JFrame {
         arbeitszeitPanel.add(countdown, BorderLayout.CENTER);
         topPanel.add(arbeitszeitPanel, BorderLayout.CENTER);
 
+        timer = new Timer(1000, e -> {
+            elapsedSeconds++;
+            updateCountdownLabel();
+        });
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setOpaque(false);
 
@@ -116,22 +124,91 @@ public class GUI extends JFrame {
         });
 
         add(topPanel, BorderLayout.NORTH);
+
+        JPanel gleitzeitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        gleitzeitPanel.setOpaque(false);
+        gleitzeitPanel.setBorder(BorderFactory.createEmptyBorder(0,0,270,0));
+        gleitzeitkonto = new JButton(bundle.getString("button.flexitime"));
+        gleitzeitkonto.setFont(customFont.deriveFont(25f));
+        gleitzeitkonto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new Gleitzeitkonto(currentLocale);
+            }
+        });
+        gleitzeitPanel.add(gleitzeitkonto);
+        add(gleitzeitPanel, BorderLayout.SOUTH);
+
+        // Benutzer-Button
+        ImageIcon benutzerIcon = new ImageIcon("src/ressourcen/userIcon-2.png");
+        benutzer = new JButton(new ImageIcon(benutzerIcon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH)));
+        benutzer.addActionListener(e -> new BenutzerMenu(currentLocale));
+
+        // Flaggen für Sprachwechsel
+        JButton deutsch = createFlagButton("src/ressourcen/deutscheFlagge.png", new Locale("de", "DE"));
+        JButton english = createFlagButton("src/ressourcen/UK-Flagge.png", new Locale("en", "UK"));
+
+        // Panel für den Benutzer-Button und Flaggen
+        JPanel buttonPanelRechtsOben = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanelRechtsOben.setOpaque(false);
+        buttonPanelRechtsOben.setBorder(BorderFactory.createEmptyBorder(48, 30, 0, 83));
+        buttonPanelRechtsOben.add(deutsch);
+        buttonPanelRechtsOben.add(english);
+        buttonPanelRechtsOben.add(benutzer);
+
+        topPanel.add(buttonPanelRechtsOben, BorderLayout.NORTH);
         setVisible(true);
+    }
+
+    private void updateCountdownLabel() {
+        int hours = elapsedSeconds / 3600;
+        int minutes = (elapsedSeconds % 3600) / 60;
+        int seconds = elapsedSeconds % 60;
+        countdown.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+    }
+
+    private JButton createFlagButton(String path, Locale locale) {
+        JButton button = new JButton();
+        try {
+            Image img = ImageIO.read(new File(path));
+            Image scaledImg = img.getScaledInstance(32, 19, Image.SCALE_SMOOTH);
+            button.setIcon(new ImageIcon(scaledImg));
+        } catch (IOException e) {
+            System.err.println("Fehler beim Laden des Bildes: " + path);
+        }
+        button.setPreferredSize(new Dimension(32, 19));
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+
+        button.addActionListener(e -> {
+            currentLocale = locale;
+            updateLabels();
+        });
+
+        return button;
     }
 
     private void loadBundle(Locale locale) {
         bundle = ResourceBundle.getBundle("ressourcen.messages", locale);
     }
 
+    private void updateLabels() {
+        loadBundle(currentLocale);
+        kommenButton.setText(bundle.getString("button.come"));
+        gehenButton.setText(bundle.getString("button.go"));
+        gearbeiteteStunden.setText(bundle.getString("worked.hours"));
+        gleitzeitkonto.setText(bundle.getString("button.flexitime"));
+        setTitle(bundle.getString("title"));
+    }
+
     public static void main(String[] args) {
-        Locale locale = new Locale("de", "DE"); // Standardmäßig Deutsch
+        Locale locale = new Locale("de", "DE");
         Datenbank datenbank = new Datenbank();
         datenbank.starten();
 
-        // Beispiel für Anmeldeversuch
         try {
-            String email = "beispiel@domain.de"; // Beispiel E-Mail
-            String passwortHash = "hashedPasswort"; // Beispiel Passwort-Hash
+            String email = "beispiel@domain.de";
+            String passwortHash = "hashedPasswort";
 
             String angemeldeteEmail = datenbank.mitarbeiterAnmelden(email, passwortHash);
 
