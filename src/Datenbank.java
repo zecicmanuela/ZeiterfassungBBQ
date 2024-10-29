@@ -55,15 +55,7 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
-    public void updateBenutzerDaten(String email, String neuerName, String neuesZeitmodell) throws SQLException {
-        String query = "UPDATE mitarbeiter SET vorname = ?, zeitmodell = ? WHERE email = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, neuerName);
-            statement.setString(2, neuesZeitmodell);
-            statement.setString(3, email);
-            statement.executeUpdate();
-        }
-    }
+
 
 
     public void updateSprache(int mitarbeiterId, String neueSprache) throws SQLException {

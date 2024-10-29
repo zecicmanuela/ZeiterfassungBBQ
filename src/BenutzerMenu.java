@@ -10,7 +10,6 @@ public class BenutzerMenu extends JFrame {
     private ResourceBundle messages;
     private Font customFont;
     private JButton passwortÄnderung;
-    private JButton datenÄnderung;
 
     private String email;
     Datenbank datenbank = new Datenbank();
@@ -30,22 +29,16 @@ public class BenutzerMenu extends JFrame {
         loadCustomFont();
 
         passwortÄnderung = new JButton(messages.getString("button.changePassword"));
-        datenÄnderung = new JButton(messages.getString("button.changeData"));
 
         applyFontToButton(passwortÄnderung);
-        applyFontToButton(datenÄnderung);
 
         passwortÄnderung.addActionListener(e -> showPasswortÄnderung());
-        datenÄnderung.addActionListener(e -> showDataChangeDialog());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(10, 10, 10, 10);
         backgroundPanel.add(passwortÄnderung, gbc);
-
-        gbc.gridy = 1;
-        backgroundPanel.add(datenÄnderung, gbc);
 
         add(backgroundPanel, BorderLayout.CENTER);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -137,63 +130,6 @@ public class BenutzerMenu extends JFrame {
         passwortDialog.add(submitButton, gbc);
 
         passwortDialog.setVisible(true);
-    }
-
-    private void showDataChangeDialog() {
-        JDialog dataDialog = createDialog(messages.getString("dialog.changeData"));
-
-        JLabel nameLabel = new JLabel(messages.getString("label.name"));
-        nameLabel.setFont(customFont.deriveFont(18f));
-        nameLabel.setForeground(Color.WHITE);
-        JTextField nameField = new JTextField(15);
-        nameField.setFont(customFont);
-
-        JLabel timeModelLabel = new JLabel(messages.getString("label.timeModel"));
-        timeModelLabel.setFont(customFont.deriveFont(18f));
-        timeModelLabel.setForeground(Color.WHITE);
-        String[] timeModels = {
-                messages.getString("zeitmodell.vollzeit"),
-                messages.getString("zeitmodell.teilzeit"),
-                messages.getString("zeitmodell.minijob")
-        };
-        JComboBox<String> timeModelComboBox = new JComboBox<>(timeModels);
-        timeModelComboBox.setFont(customFont);
-
-        JButton submitButton = new JButton(messages.getString("button.submit"));
-        applyFontToButton(submitButton);
-
-        submitButton.addActionListener(e -> {
-            String neuerName = nameField.getText();
-            String neuesZeitmodell = (String) timeModelComboBox.getSelectedItem();
-
-            try {
-                datenbank.updateBenutzerDaten(email, neuerName, neuesZeitmodell);
-                JOptionPane.showMessageDialog(this, messages.getString("message.dataChanged"));
-                dataDialog.dispose();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, messages.getString("message.error") + ex.getMessage());
-            }
-        });
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        dataDialog.add(nameLabel, gbc);
-        gbc.gridx = 1;
-        dataDialog.add(nameField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        dataDialog.add(timeModelLabel, gbc);
-        gbc.gridx = 1;
-        dataDialog.add(timeModelComboBox, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        dataDialog.add(submitButton, gbc);
-
-        dataDialog.setVisible(true);
     }
 
     private JDialog createDialog(String title) {
