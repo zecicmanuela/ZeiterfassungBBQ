@@ -214,10 +214,6 @@ public class GUIAnmeldung extends JFrame {
         passwortField.setText("");
     }
 
-    private boolean authenticate(String username, String password) {
-        // Dummy-Authentifizierung
-        return username.equals("user") && password.equals("password");
-    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GUIAnmeldung::new);

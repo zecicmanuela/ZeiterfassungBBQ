@@ -2,10 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.PropertyResourceBundle;
 public class Registrieren extends JFrame {
 
     private JTextField vornameField;
@@ -23,7 +21,7 @@ public class Registrieren extends JFrame {
 
     public Registrieren(Font customFont) {
         this.customFont = customFont;
-        this.messages = ResourceBundle.getBundle("ressourcen.messages", Locale.getDefault()); // Sprachbundle laden
+        this.messages = ResourceBundle.getBundle("ressourcen.messages", Locale.getDefault());
         setTitle(messages.getString("register.title"));
         setSize(900, 800);
         setLayout(new BorderLayout());
@@ -247,7 +245,6 @@ public class Registrieren extends JFrame {
             wochenstunden = "10";
         } else {
             JOptionPane.showMessageDialog(this, "Unbekanntes Zeitmodell", "Fehler", JOptionPane.ERROR_MESSAGE);
-            return;
         }
     }
 
