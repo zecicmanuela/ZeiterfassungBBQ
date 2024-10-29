@@ -26,18 +26,11 @@ public class Datenbank {
         }
     }
 
-    public void addMitarbeiter(String vorname, String nachname, String email, String passwort, String sprache, String wochenstunden, double gleitzeitWarnungGrenze) throws SQLException {
-        String sql = "INSERT INTO mitarbeiter (vorname, nachname, email, passwort, sprache, wochenstunden, gleitzeitWarnungGrenze) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, vorname);
-            stmt.setString(2, nachname);
-            stmt.setString(3, email);
-            stmt.setString(4, passwort);
-            stmt.setString(5, sprache);
-            stmt.setString(6, wochenstunden); // ENUM-Wert hier als String
-            stmt.setDouble(7, gleitzeitWarnungGrenze);
-            stmt.executeUpdate();
-        }
+    public void addMitarbeiter(String vorname, String nachname, String email, String passwortHash, String sprache, int wochenstunden, double gleitzeitWarnungGrenze) throws SQLException {
+        String query = "INSERT INTO mitarbeiter (vorname, nachname, email, passwort_hash, sprache, wochenstunden, gleitzeit_warnung_grenze) " +
+                "VALUES(\"" + vorname + "\", \"" + nachname + "\", \"" + email + "\", \"" + passwortHash + "\", \"" + sprache + "\", " + wochenstunden + ", " + gleitzeitWarnungGrenze + ")";
+
+        statement.execute(query);
     }
 
 
