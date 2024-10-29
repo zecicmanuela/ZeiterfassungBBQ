@@ -1,5 +1,7 @@
 import java.sql.*;
 import java.sql.DriverManager;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Locale;
 import javax.swing.JOptionPane;
 public class Datenbank {
@@ -111,8 +113,10 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
-    public void mitarbeiterKommt(String mitarbeiterId, String datum, String arbeitsbeginn) throws SQLException {
+    public void mitarbeiterKommt(String mitarbeiterId) throws SQLException {
         // Prüfen, ob für den aktuellen Tag bereits ein Arbeitsbeginn existiert
+        LocalDate datum = LocalDate.now();
+        LocalTime arbeitsbeginn = LocalTime.now();
         String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
         ResultSet resultSet = statement.executeQuery(checkQuery);
 
@@ -127,7 +131,9 @@ public class Datenbank {
         }
     }
 
-    public void mitarbeiterGeht(String mitarbeiterId, String datum, String arbeitsende) throws SQLException {
+    public void mitarbeiterGeht(String mitarbeiterId) throws SQLException {
+        LocalDate datum = LocalDate.now();
+        LocalTime arbeitsende = LocalTime.now();
         // Prüfen, ob der Mitarbeiter an diesem Tag bereits Arbeitsbeginn hat
         String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
         ResultSet resultSet = statement.executeQuery(checkQuery);
