@@ -56,8 +56,6 @@ public class Datenbank {
     }
 
 
-
-
     public void updateSprache(int mitarbeiterId, String neueSprache) throws SQLException {
         String query = "UPDATE einstellungen SET sprache = '" + neueSprache + "' WHERE mitarbeiter_id = " + mitarbeiterId;
 
@@ -82,27 +80,36 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
-    public void mitarbeiterKommt(String mitarbeiterId) throws SQLException {
+    public int findeMitarbeiterID(String email) throws SQLException {
+        String checkQuery = "SELECT mitarbeiter_id FROM mitarbeiter WHERE email = '" + email + "'";
+        ResultSet resultSet = statement.executeQuery(checkQuery);
+        String mitarbeiterID = null;
+        if (resultSet.next()) {
+            mitarbeiterID = resultSet.getString("mitarbeiter_id");
+        }
+        return Integer.parseInt(mitarbeiterID);
+    }
+
+    public void mitarbeiterKommt(String email) throws SQLException {
         // Prüfen, ob für den aktuellen Tag bereits ein Arbeitsbeginn existiert
         LocalDate datum = LocalDate.now();
-        LocalTime arbeitsbeginn = LocalTime.now();
-        String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
+        LocalTime arbeitsbeginn = LocalTime.now().withNano(0);
+        int mitarbeiterID = findeMitarbeiterID(email);
+        String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterID + " AND datum = '" + datum + "'";
         ResultSet resultSet = statement.executeQuery(checkQuery);
 
         if (!resultSet.next()) {
             // Wenn es noch keinen Eintrag gibt, füge eine neue Arbeitszeit ohne Arbeitsende ein
             String insertQuery = "INSERT INTO arbeitszeiten (mitarbeiter_id, datum, arbeitsbeginn) " +
-                    "VALUES(" + mitarbeiterId + ", '" + datum + "', '" + arbeitsbeginn + "')";
+                    "VALUES(" + mitarbeiterID + ", '" + datum + "', '" + arbeitsbeginn + "')";
             statement.execute(insertQuery);
-        } else {
-            // Wenn der Mitarbeiter bereits gekommen ist, kannst du optional eine Meldung ausgeben
-            JOptionPane.showMessageDialog(null, "Mitarbeiter ist bereits gekommen.");
         }
     }
 
-    public void mitarbeiterGeht(String mitarbeiterId) throws SQLException {
+    public void mitarbeiterGeht(String email) throws SQLException {
         LocalDate datum = LocalDate.now();
-        LocalTime arbeitsende = LocalTime.now();
+        LocalTime arbeitsende = LocalTime.now().withNano(0);
+        int mitarbeiterId = findeMitarbeiterID(email);
         // Prüfen, ob der Mitarbeiter an diesem Tag bereits Arbeitsbeginn hat
         String checkQuery = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
         ResultSet resultSet = statement.executeQuery(checkQuery);
@@ -111,9 +118,6 @@ public class Datenbank {
             // Wenn Arbeitsbeginn existiert, aktualisiere den Arbeitsende-Eintrag
             String updateQuery = "UPDATE arbeitszeiten SET arbeitsende = '" + arbeitsende + "' WHERE mitarbeiter_id = " + mitarbeiterId + " AND datum = '" + datum + "'";
             statement.executeUpdate(updateQuery);
-        } else {
-            // Wenn der Mitarbeiter nicht eingetragen ist, optional eine Fehlermeldung ausgeben
-            JOptionPane.showMessageDialog(null, "Mitarbeiter hat noch keinen Arbeitsbeginn eingetragen.");
         }
     }
 
@@ -124,10 +128,8 @@ public class Datenbank {
 
         // Wenn ein Datensatz zurückgegeben wird, ist die Anmeldung erfolgreich
         if (resultSet.next()) {
-            JOptionPane.showMessageDialog(null, "Anmeldung erfolgreich: Willkommen " + resultSet.getString("vorname") + " " + resultSet.getString("nachname"));
             return email;
         } else {
-            JOptionPane.showMessageDialog(null, "Anmeldung fehlgeschlagen: Ungültige E-Mail oder Passwort.");
             return null; // Anmeldung fehlgeschlagen
         }
     }
