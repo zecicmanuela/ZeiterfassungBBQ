@@ -28,7 +28,6 @@ public class Registrieren extends JFrame {
         setSize(900, 800);
         setLayout(new BorderLayout());
 
-    datenbank.starten();
 
         JPanel backgroundPanel = createBackgroundPanel();
         setupComponents(backgroundPanel);
@@ -215,12 +214,16 @@ public class Registrieren extends JFrame {
         speichernButton.addActionListener(e -> {
             String vorname = vornameField.getText();
             JOptionPane.showMessageDialog(this, messages.getString("register.welcome") + " " + vorname + "!", messages.getString("register.title"), JOptionPane.INFORMATION_MESSAGE);
-            speichernMitarbeiter();
+            try {
+                speichernMitarbeiter();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             dispose();
         });
     }
 
-    private void speichernMitarbeiter() {
+    private void speichernMitarbeiter() throws SQLException {
         System.out.println("Wir waren hier");
         String vorname = vornameField.getText();
         String nachname = nameField.getText();
@@ -236,19 +239,24 @@ public class Registrieren extends JFrame {
 
         // Holen Sie sich das ausgewählte Zeitmodell
         String zeitmodell = (String) zeitmodellComboBox.getSelectedItem(); // Hier den Wert abrufen
-        String wochenstunden = "";
+        int wochenstunden = 0;
 
         // Bestimmen Sie die Wochenstunden basierend auf dem Zeitmodell
         if (zeitmodell.equals(messages.getString("zeitmodell.vollzeit"))) {
-            wochenstunden = "40"; // Diese sollten als Strings übereinstimmen mit ENUM
+            wochenstunden = 40; // Diese sollten als Strings übereinstimmen mit ENUM
         } else if (zeitmodell.equals(messages.getString("zeitmodell.teilzeit"))) {
-            wochenstunden = "20";
+            wochenstunden = 20;
         } else if (zeitmodell.equals(messages.getString("zeitmodell.minijob"))) {
-            wochenstunden = "10";
+            wochenstunden = 10;
         } else {
             JOptionPane.showMessageDialog(this, "Unbekanntes Zeitmodell", "Fehler", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        datenbank.starten();
+        datenbank.addMitarbeiter(vorname, nachname, email, passwort, "DE", wochenstunden, 5.0);
+
+
+
     }
 
 
