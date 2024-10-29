@@ -119,7 +119,7 @@ public class GUIAnmeldung extends JFrame {
             try {
                 datenbank.starten();
                 String email = datenbank.mitarbeiterAnmelden(benutzernameField.getText(), new String(passwortField.getPassword()));
-
+                datenbank.schliessen();
                 if (email != null) {
                     new GUI(Locale.getDefault(), email); // Übergibt die angemeldete E-Mail
                     dispose(); // Schließt das Login-Fenster
