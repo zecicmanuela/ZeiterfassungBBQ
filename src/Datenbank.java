@@ -50,11 +50,21 @@ public class Datenbank {
     }
 
 
-    public void updatePasswort(int email, String neuesPasswort) throws SQLException {
-        String query = "UPDATE mitarbeiter SET passwort_hash = '" + neuesPasswort + "' WHERE email = " + email;
-
+    public void updatePasswort(String email, String neuesPasswort) throws SQLException {
+        String query = "UPDATE mitarbeiter SET passwort_hash = '" + neuesPasswort + "' WHERE email = '" + email + "'";
         statement.executeUpdate(query);
     }
+
+    public void updateBenutzerDaten(String email, String neuerName, String neuesZeitmodell) throws SQLException {
+        String query = "UPDATE mitarbeiter SET vorname = ?, zeitmodell = ? WHERE email = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, neuerName);
+            statement.setString(2, neuesZeitmodell);
+            statement.setString(3, email);
+            statement.executeUpdate();
+        }
+    }
+
 
     public void updateSprache(int mitarbeiterId, String neueSprache) throws SQLException {
         String query = "UPDATE einstellungen SET sprache = '" + neueSprache + "' WHERE mitarbeiter_id = " + mitarbeiterId;

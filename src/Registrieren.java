@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 public class Registrieren extends JFrame {
@@ -235,7 +236,7 @@ public class Registrieren extends JFrame {
             return;
         }
 
-        // Holen Sie sich das ausgewählte Zeitmodell
+
         String zeitmodell = (String) zeitmodellComboBox.getSelectedItem(); // Hier den Wert abrufen
         int wochenstunden = 0;
 

@@ -142,7 +142,7 @@ public class GUI extends JFrame {
         // Benutzer-Button
         ImageIcon benutzerIcon = new ImageIcon("src/ressourcen/userIcon-2.png");
         benutzer = new JButton(new ImageIcon(benutzerIcon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH)));
-        benutzer.addActionListener(e -> new BenutzerMenu(currentLocale));
+        benutzer.addActionListener(e -> new BenutzerMenu(currentLocale, email));
 
         // Flaggen für Sprachwechsel
         JButton deutsch = createFlagButton("src/ressourcen/deutscheFlagge.png", new Locale("de", "DE"));

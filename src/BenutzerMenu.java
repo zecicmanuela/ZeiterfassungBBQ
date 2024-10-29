@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -10,37 +11,33 @@ public class BenutzerMenu extends JFrame {
     private Font customFont;
     private JButton passwortÄnderung;
     private JButton datenÄnderung;
+
+    private String email;
     Datenbank datenbank = new Datenbank();
 
-    public BenutzerMenu(Locale locale) {
-        // Setze das Locale und lade die entsprechenden Nachrichten
+    public BenutzerMenu(Locale locale, String email) {
+        this.email = email;
         Locale.setDefault(locale);
         messages = ResourceBundle.getBundle("ressourcen.messages", locale);
 
-        setTitle(messages.getString("menu.title")); // Setze den Fenstertitel
+        setTitle(messages.getString("menu.title"));
         setSize(800, 600);
         setLayout(new BorderLayout());
 
-        // Erstelle ein Hintergrund-Panel
         JPanel backgroundPanel = createBackgroundPanel();
         backgroundPanel.setLayout(new GridBagLayout());
 
-        // Lade die benutzerdefinierte Schriftart
         loadCustomFont();
 
-        // Schaltflächen hinzufügen
         passwortÄnderung = new JButton(messages.getString("button.changePassword"));
         datenÄnderung = new JButton(messages.getString("button.changeData"));
 
-        // Schriftart für die Schaltflächen anwenden
         applyFontToButton(passwortÄnderung);
         applyFontToButton(datenÄnderung);
 
-        // Aktionen für die Schaltflächen
         passwortÄnderung.addActionListener(e -> showPasswortÄnderung());
         datenÄnderung.addActionListener(e -> showDataChangeDialog());
 
-        // Schaltflächen zum Hintergrund-Panel hinzufügen
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -50,9 +47,7 @@ public class BenutzerMenu extends JFrame {
         gbc.gridy = 1;
         backgroundPanel.add(datenÄnderung, gbc);
 
-        // Füge das Panel zum Frame hinzu
         add(backgroundPanel, BorderLayout.CENTER);
-
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -85,11 +80,9 @@ public class BenutzerMenu extends JFrame {
         button.setFont(customFont.deriveFont(20f));
     }
 
-    // Methode, um das Dialogfenster für die Passwortänderung zu zeigen
     private void showPasswortÄnderung() {
         JDialog passwortDialog = createDialog(messages.getString("dialog.changePassword"));
 
-        // Felder für Passwortänderung
         JLabel currentPasswordLabel = new JLabel(messages.getString("label.currentPassword"));
         currentPasswordLabel.setFont(customFont.deriveFont(18f));
         currentPasswordLabel.setForeground(Color.white);
@@ -103,13 +96,32 @@ public class BenutzerMenu extends JFrame {
         JButton submitButton = new JButton(messages.getString("button.submit"));
         applyFontToButton(submitButton);
 
-        // GridBagLayout für den Dialog
+        submitButton.addActionListener(e -> {
+            String currentPassword = new String(currentPasswordField.getPassword());
+            String newPassword = new String(newPasswordField.getPassword());
+
+            try {
+                datenbank.starten();
+                // Validierung des aktuellen Passworts über die E-Mail
+                if (datenbank.mitarbeiterAnmelden(email, currentPassword) != null) {
+                    // Hier aktualisieren wir das Passwort über die E-Mail anstelle einer ID
+                    datenbank.updatePasswort(email, newPassword);
+                    JOptionPane.showMessageDialog(this, "Passwort erfolgreich geändert!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Aktuelles Passwort ist falsch.");
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Fehler bei der Passwortänderung.");
+            } finally {
+                datenbank.schliessen();
+            }
+        });
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(10, 10, 10, 10);
-
-        // Elemente hinzufügen
         passwortDialog.add(currentPasswordLabel, gbc);
         gbc.gridx = 1;
         passwortDialog.add(currentPasswordField, gbc);
@@ -127,11 +139,9 @@ public class BenutzerMenu extends JFrame {
         passwortDialog.setVisible(true);
     }
 
-    // Methode, um das Dialogfenster für die Datenänderung zu zeigen
     private void showDataChangeDialog() {
         JDialog dataDialog = createDialog(messages.getString("dialog.changeData"));
 
-        // Felder für Datenänderung
         JLabel nameLabel = new JLabel(messages.getString("label.name"));
         nameLabel.setFont(customFont.deriveFont(18f));
         nameLabel.setForeground(Color.WHITE);
@@ -141,22 +151,34 @@ public class BenutzerMenu extends JFrame {
         JLabel timeModelLabel = new JLabel(messages.getString("label.timeModel"));
         timeModelLabel.setFont(customFont.deriveFont(18f));
         timeModelLabel.setForeground(Color.WHITE);
-        String[] timeModels = { messages.getString("zeitmodell.vollzeit"),
+        String[] timeModels = {
+                messages.getString("zeitmodell.vollzeit"),
                 messages.getString("zeitmodell.teilzeit"),
-                messages.getString("zeitmodell.minijob") } ;
+                messages.getString("zeitmodell.minijob")
+        };
         JComboBox<String> timeModelComboBox = new JComboBox<>(timeModels);
         timeModelComboBox.setFont(customFont);
 
         JButton submitButton = new JButton(messages.getString("button.submit"));
         applyFontToButton(submitButton);
 
-        // GridBagLayout für den Dialog
+        submitButton.addActionListener(e -> {
+            String neuerName = nameField.getText();
+            String neuesZeitmodell = (String) timeModelComboBox.getSelectedItem();
+
+            try {
+                datenbank.updateBenutzerDaten(email, neuerName, neuesZeitmodell);
+                JOptionPane.showMessageDialog(this, messages.getString("message.dataChanged"));
+                dataDialog.dispose();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, messages.getString("message.error") + ex.getMessage());
+            }
+        });
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(10, 10, 10, 10);
-
-        // Elemente hinzufügen
         dataDialog.add(nameLabel, gbc);
         gbc.gridx = 1;
         dataDialog.add(nameField, gbc);
@@ -180,7 +202,6 @@ public class BenutzerMenu extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new GridBagLayout());
 
-        // Erstelle ein Hintergrund-Panel für den Dialog
         JPanel backgroundPanel = createBackgroundPanel();
         backgroundPanel.setLayout(new GridBagLayout());
         dialog.setContentPane(backgroundPanel);
@@ -189,7 +210,6 @@ public class BenutzerMenu extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Beispiel für den Aufruf des benutzerMenu mit deutschem Locale
-        SwingUtilities.invokeLater(() -> new BenutzerMenu(new Locale("de", "DE")));
+        SwingUtilities.invokeLater(() -> new BenutzerMenu(new Locale("de", "DE"), "beispiel@domain.de"));
     }
 }
