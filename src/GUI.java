@@ -98,7 +98,7 @@ public class GUI extends JFrame {
                 String arbeitsbeginn = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
                 try {
-                    datenbank.mitarbeiterKommt(mitarbeiterEmail, datum, arbeitsbeginn);
+                    datenbank.mitarbeiterKommt(mitarbeiterEmail);
                     JOptionPane.showMessageDialog(null, "Kommen-Zeit erfasst: " + arbeitsbeginn);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Fehler beim Erfassen der Kommen-Zeit: " + ex.getMessage());
@@ -115,7 +115,7 @@ public class GUI extends JFrame {
                 String arbeitsende = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
                 try {
-                    datenbank.mitarbeiterGeht(mitarbeiterEmail, datum, arbeitsende);
+                    datenbank.mitarbeiterGeht(mitarbeiterEmail);
                     JOptionPane.showMessageDialog(null, "Gehen-Zeit erfasst: " + arbeitsende);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Fehler beim Erfassen der Gehen-Zeit: " + ex.getMessage());

@@ -20,12 +20,15 @@ public class Registrieren extends JFrame {
     private final Font customFont;
     private final ResourceBundle messages;
 
+
     public Registrieren(Font customFont) {
         this.customFont = customFont;
         this.messages = ResourceBundle.getBundle("ressourcen.messages", Locale.getDefault()); // Sprachbundle laden
         setTitle(messages.getString("register.title"));
         setSize(900, 800);
         setLayout(new BorderLayout());
+
+    datenbank.starten();
 
         JPanel backgroundPanel = createBackgroundPanel();
         setupComponents(backgroundPanel);
@@ -219,7 +222,6 @@ public class Registrieren extends JFrame {
 
     private void speichernMitarbeiter() {
         System.out.println("Wir waren hier");
-        // Benutzereingaben aus den Feldern holen
         String vorname = vornameField.getText();
         String nachname = nameField.getText();
         String email = emailField.getText();
