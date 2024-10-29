@@ -49,22 +49,9 @@ public class Datenbank {
         statement.execute(query);
     }
 
-    public void addBenachrichtigung(int mitarbeiterId, String datum, String nachricht, boolean gesehen) throws SQLException {
-        String query = "INSERT INTO benachrichtigungen (mitarbeiter_id, datum, nachricht, gesehen) " +
-                "VALUES(" + mitarbeiterId + ", '" + datum + "', '" + nachricht + "', " + gesehen + ")";
 
-        statement.execute(query);
-    }
-
-    public void addEinstellungen(int mitarbeiterId, String sprache, String passwortHash, double gleitzeitGrenze) throws SQLException {
-        String query = "INSERT INTO einstellungen (mitarbeiter_id, sprache, passwort_hash, gleitzeit_grenze) " +
-                "VALUES(" + mitarbeiterId + ", '" + sprache + "', '" + passwortHash + "', " + gleitzeitGrenze + ")";
-
-        statement.execute(query);
-    }
-
-    public void updatePasswort(int mitarbeiterId, String neuesPasswort) throws SQLException {
-        String query = "UPDATE mitarbeiter SET passwort_hash = '" + neuesPasswort + "' WHERE mitarbeiter_id = " + mitarbeiterId;
+    public void updatePasswort(int email, String neuesPasswort) throws SQLException {
+        String query = "UPDATE mitarbeiter SET passwort_hash = '" + neuesPasswort + "' WHERE email = " + email;
 
         statement.executeUpdate(query);
     }
@@ -83,18 +70,6 @@ public class Datenbank {
 
     public ResultSet getGleitzeit(int mitarbeiterId) throws SQLException {
         String query = "SELECT * FROM gleitzeit WHERE mitarbeiter_id = " + mitarbeiterId;
-
-        return statement.executeQuery(query);
-    }
-
-    public void markiereBenachrichtigungGesehen(int benachrichtigungId) throws SQLException {
-        String query = "UPDATE benachrichtigungen SET gesehen = TRUE WHERE benachrichtigung_id = " + benachrichtigungId;
-
-        statement.executeUpdate(query);
-    }
-
-    public ResultSet getBenachrichtigungen(int mitarbeiterId) throws SQLException {
-        String query = "SELECT * FROM benachrichtigungen WHERE mitarbeiter_id = " + mitarbeiterId + " AND gesehen = FALSE";
 
         return statement.executeQuery(query);
     }
