@@ -74,6 +74,25 @@ public class Datenbank {
         return statement.executeQuery(query);
     }
 
+    public double getArbeitszeit(int mitarbeiterId, int tageAnzahl) throws SQLException {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(tageAnzahl);
+
+        String query = "SELECT mitarbeiter_id AS woche, SUM(TIME_TO_SEC(TIMEDIFF(arbeitsende, arbeitsbeginn))/ 3600) AS gleitzeit " +
+                "FROM arbeitszeiten " +
+                "WHERE mitarbeiter_id = " + mitarbeiterId + " " +
+                "AND datum BETWEEN '" + startDate + "' AND '" + endDate + "' " +
+                "GROUP BY mitarbeiter_id";
+
+        ResultSet resultSet = statement.executeQuery(query);
+        while (resultSet.next()) {
+            double gleitzeit = resultSet.getDouble("gleitzeit");
+            return gleitzeit;
+        }
+        return 0;
+    }
+
+
     public void updateGleitzeitWarnungGrenze(int mitarbeiterId, double neueGrenze) throws SQLException {
         String query = "UPDATE einstellungen SET gleitzeit_grenze = " + neueGrenze + " WHERE mitarbeiter_id = " + mitarbeiterId;
 
@@ -89,6 +108,7 @@ public class Datenbank {
         }
         return Integer.parseInt(mitarbeiterID);
     }
+
 
     public void mitarbeiterKommt(String email) throws SQLException {
         // Prüfen, ob für den aktuellen Tag bereits ein Arbeitsbeginn existiert
