@@ -173,11 +173,11 @@ public class Gleitzeitkonto extends JFrame {
 
     private void updateImage(double gleitzeit) {
         String imagePath;
-
+        gleitzeit = Math.abs(gleitzeit);
         // Ampel-Bedingungen für Gleitzeit
-        if (gleitzeit < -4) { // Rot bei weniger als -4 Stunden
+        if (gleitzeit>30) { // Rot bei mehr als 4 Stunden
             imagePath = "src/ressourcen/roteAmpel.png";
-        } else if (gleitzeit <= 0 && gleitzeit >= -4) { // Gelb bei 0 bis -4 Stunden
+        } else if (gleitzeit >10) { // Gelb bei 0 bis -4 Stunden
             imagePath = "src/ressourcen/gelbeAmpel.png";
         } else { // Grün für positive Werte über 0 Stunden
             imagePath = "src/ressourcen/grüneAmpel-2.png";

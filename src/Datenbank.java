@@ -190,7 +190,7 @@ public class Datenbank {
     }
 
 
-    public void mitarbeiterKommt(String email, LocalDate now, LocalTime startTime) throws SQLException {
+    public void mitarbeiterKommt(String email) throws SQLException {
         // Prüfen, ob für den aktuellen Tag bereits ein Arbeitsbeginn existiert
         LocalDate datum = LocalDate.now();
         LocalTime arbeitsbeginn = LocalTime.now().withNano(0);
@@ -206,7 +206,7 @@ public class Datenbank {
         }
     }
 
-    public void mitarbeiterGeht(String email, LocalDate now, LocalTime endTime, int totalSeconds) throws SQLException {
+    public void mitarbeiterGeht(String email) throws SQLException {
         LocalDate datum = LocalDate.now();
         LocalTime arbeitsende = LocalTime.now().withNano(0);
         int mitarbeiterId = findeMitarbeiterID(email);

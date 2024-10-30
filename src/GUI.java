@@ -141,7 +141,7 @@ public class GUI extends JFrame {
             startTime = LocalTime.now(); // Arbeitsbeginn speichern
             timer.start();
             try {
-                datenbank.mitarbeiterKommt(email, LocalDate.now(), startTime); // Arbeitsbeginn speichern
+                datenbank.mitarbeiterKommt(email); // Arbeitsbeginn speichern
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
@@ -158,7 +158,7 @@ public class GUI extends JFrame {
             totalSeconds -= pauseDuration;
 
             try {
-                datenbank.mitarbeiterGeht(email, LocalDate.now(), endTime, totalSeconds); // Arbeitsende und gesamte Arbeitszeit speichern
+                datenbank.mitarbeiterGeht(email); // Arbeitsende und gesamte Arbeitszeit speichern
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
