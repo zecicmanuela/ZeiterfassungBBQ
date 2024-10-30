@@ -184,8 +184,9 @@ public class Datenbank {
         String mitarbeiterID = null;
         if (resultSet.next()) {
             mitarbeiterID = resultSet.getString("mitarbeiter_id");
+            return Integer.parseInt(mitarbeiterID);
         }
-        return Integer.parseInt(mitarbeiterID);
+        return 0;
     }
 
 

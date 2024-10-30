@@ -95,13 +95,8 @@ public class GUI extends JFrame {
         gleitzeitkonto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int mitarbeiterID;
-                try {
-                    mitarbeiterID = datenbank.findeMitarbeiterID(email);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                new Gleitzeitkonto(currentLocale, mitarbeiterID);
+
+                new Gleitzeitkonto(currentLocale, email);
             }
         });
         gleitzeitPanel.add(gleitzeitkonto);

@@ -15,10 +15,10 @@ public class Gleitzeitkonto extends JFrame {
     private int minuten; // Aktuelle Minuten
     private ResourceBundle bundle; // ResourceBundle für die Mehrsprachigkeit
     private Datenbank datenbank = new Datenbank();
-    private int mitarbeiterID;
+    private String email;
 
-    public Gleitzeitkonto(Locale locale, int mitarbeiterID) {
-        this.mitarbeiterID = mitarbeiterID;
+    public Gleitzeitkonto(Locale locale, String email) {
+        this.email = email;
         setTitle("Gleitzeitkonto");
         setSize(700, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -141,14 +141,18 @@ public class Gleitzeitkonto extends JFrame {
     // Methode zum Aktualisieren der Stunden
     private void updateHours() {
         double gleitzeit;
+        int mitarbeiterID;
         try {
+            datenbank.starten();
+            mitarbeiterID = datenbank.findeMitarbeiterID(email);
             gleitzeit = datenbank.getGleitzeitWoche(mitarbeiterID);
+            datenbank.schliessen();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         int stunden = (int) gleitzeit;
 
-    // Minuten berechnen  (Nachkommastellen in Minuten umrechnen)
+    // Minuten berechnen (Nachkommastellen in Minuten umrechnen)
         int minuten = (int) ((gleitzeit - stunden) * 60);
 
         // Update das Bild nach Zeitänderung
