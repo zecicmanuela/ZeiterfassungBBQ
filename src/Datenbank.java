@@ -53,6 +53,7 @@ public class Datenbank {
 
 
 
+
     public void addArbeitszeit(int mitarbeiterId, String datum, String arbeitsbeginn, String arbeitsende, boolean istUeberzeit) throws SQLException {
         String query = "INSERT INTO arbeitszeiten (mitarbeiter_id, datum, arbeitsbeginn, arbeitsende, ist_ueberzeit) " +
                 "VALUES(" + mitarbeiterId + ", '" + datum + "', '" + arbeitsbeginn + "', '" + arbeitsende + "', " + istUeberzeit + ")";
@@ -112,11 +113,6 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
-    public ResultSet getArbeitszeiten(int mitarbeiterId) throws SQLException {
-        String query = "SELECT * FROM arbeitszeiten WHERE mitarbeiter_id = " + mitarbeiterId;
-
-        return statement.executeQuery(query);
-    }
 
     public ResultSet getGleitzeit(int mitarbeiterId) throws SQLException {
         String query = "SELECT * FROM gleitzeit WHERE mitarbeiter_id = " + mitarbeiterId;
