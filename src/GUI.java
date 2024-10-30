@@ -204,8 +204,4 @@ public class GUI extends JFrame {
         setTitle(bundle.getString("title"));
     }
 
-    public static void main(String[] args) {
-        Locale locale = new Locale("de", "DE"); // Standardmäßig Deutsch
-        SwingUtilities.invokeLater(() -> new GUI(locale, null));
-    }
 }

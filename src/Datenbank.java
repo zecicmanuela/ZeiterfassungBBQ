@@ -1,3 +1,6 @@
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.time.LocalDate;
@@ -26,12 +29,27 @@ public class Datenbank {
         }
     }
 
-    public void addMitarbeiter(String vorname, String nachname, String email, String passwortHash, String sprache, int wochenstunden, double gleitzeitWarnungGrenze) throws SQLException {
-        String query = "INSERT INTO mitarbeiter (vorname, nachname, email, passwort_hash, sprache, wochenstunden, gleitzeit_warnung_grenze) " +
-                "VALUES(\"" + vorname + "\", \"" + nachname + "\", \"" + email + "\", \"" + passwortHash + "\", \"" + sprache + "\", " + wochenstunden + ", " + gleitzeitWarnungGrenze + ")";
+    public void addMitarbeiter(String vorname, String nachname, String email, String passwortHash, String sprache, int wochenstunden, double gleitzeitWarnungGrenze, String sicherheitsfrage, String antwort) throws SQLException {
+        // Aktualisierte SQL-Abfrage, um Passwort_hash zu verwenden
+        String query = "INSERT INTO mitarbeiter (vorname, nachname, email, Passwort_hash, sprache, wochenstunden, gleitzeit_warnung_grenze, sicherheitsfrage, antwort) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        statement.execute(query);
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, vorname);
+            pstmt.setString(2, nachname);
+            pstmt.setString(3, email);
+            pstmt.setString(4, passwortHash); // Hier bleibt der Hash (oder Klartext, je nach Bedarf)
+            pstmt.setString(5, sprache);
+            pstmt.setInt(6, wochenstunden);
+            pstmt.setDouble(7, gleitzeitWarnungGrenze);
+            pstmt.setString(8, sicherheitsfrage);
+            pstmt.setString(9, antwort);
+
+            pstmt.executeUpdate();
+        }
     }
+
+
 
 
 
@@ -51,8 +69,40 @@ public class Datenbank {
 
 
     public void updatePasswort(String email, String neuesPasswort) throws SQLException {
-        String query = "UPDATE mitarbeiter SET passwort_hash = '" + neuesPasswort + "' WHERE email = '" + email + "'";
-        statement.executeUpdate(query);
+        String query = "UPDATE mitarbeiter SET Passwort_hash = ? WHERE email = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, neuesPasswort); // Klartext-Passwort setzen
+            pstmt.setString(2, email); // E-Mail-Adresse setzen
+            pstmt.executeUpdate();
+        }
+    }
+
+
+    public String getSicherheitsfrage(String email) throws SQLException {
+        String query = "SELECT sicherheitsfrage FROM mitarbeiter WHERE email = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, email);
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getString("sicherheitsfrage");
+        } else {
+            throw new SQLException("Benutzer nicht gefunden");
+        }
+    }
+
+    // Methode, um die Sicherheitsantwort eines Benutzers abzurufen
+    public String getSicherheitsantwort(String email) throws SQLException {
+        String query = "SELECT antwort FROM mitarbeiter WHERE email = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, email);
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getString("antwort");
+        } else {
+            throw new SQLException("Benutzer nicht gefunden");
+        }
     }
 
 
@@ -141,18 +191,23 @@ public class Datenbank {
         }
     }
 
-    public String mitarbeiterAnmelden(String email, String passwortHash) throws SQLException {
-        // SQL-Abfrage zur Überprüfung von E-Mail und Passwort-Hash
-        String query = "SELECT * FROM mitarbeiter WHERE email = '" + email + "' AND passwort_hash = '" + passwortHash + "'";
-        ResultSet resultSet = statement.executeQuery(query);
+    public String mitarbeiterAnmelden(String email, String passwort) throws SQLException {
+        // SQL-Abfrage zur Überprüfung von E-Mail und Passwort
+        String query = "SELECT * FROM mitarbeiter WHERE email = ? AND Passwort_hash = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, email);
+            pstmt.setString(2, passwort); // Verwenden Sie das Klartext-Passwort
+            ResultSet resultSet = pstmt.executeQuery();
 
-        // Wenn ein Datensatz zurückgegeben wird, ist die Anmeldung erfolgreich
-        if (resultSet.next()) {
-            return email;
-        } else {
-            return null; // Anmeldung fehlgeschlagen
+            // Wenn ein Datensatz zurückgegeben wird, ist die Anmeldung erfolgreich
+            if (resultSet.next()) {
+                return email;
+            } else {
+                return null; // Anmeldung fehlgeschlagen
+            }
         }
     }
+
 
 
 
@@ -163,14 +218,31 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
+    private String hashPasswort(String passwort) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(passwort.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
 
 
     public void schliessen() {
         try {
-            connection.close();
-            connection = null;
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "datenschließen");
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+                connection = null;
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Fehler beim Schließen der Verbindung: " + e.getMessage());
         }
     }
 }

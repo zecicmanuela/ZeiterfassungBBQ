@@ -155,7 +155,4 @@ public class Gleitzeitkonto extends JFrame {
         return new int[]{stunden, minuten};
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Gleitzeitkonto(new Locale("de"))); // Standardmäßig Deutsch
-    }
 }
