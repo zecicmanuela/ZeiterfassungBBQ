@@ -8,12 +8,15 @@ import java.util.ResourceBundle;
 
 public class Gleitzeitkonto extends JFrame {
 
+    private enum Zeitraum {WOCHE, MONAT, JAHR}
+
+    private Zeitraum aktuellerZeitraum = Zeitraum.WOCHE;
     private Font customFont;
     private JLabel stundenLabel;
     private JLabel imageLabel;
     private int stunden; // Aktuelle Stunden
     private int minuten; // Aktuelle Minuten
-    private ResourceBundle bundle; // ResourceBundle für die Mehrsprachigkeit
+    private ResourceBundle bundle;
     private Datenbank datenbank = new Datenbank();
     private String email;
 
@@ -22,27 +25,22 @@ public class Gleitzeitkonto extends JFrame {
         setTitle("Gleitzeitkonto");
         setSize(700, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null); // Fenster zentrieren
+        setLocationRelativeTo(null);
 
-        // Benutzerdefinierte Schriftart laden
         loadCustomFont();
-
-        // ResourceBundle laden
         loadBundle(locale);
 
-        // Hintergrundpanel mit Bild
         JPanel backgroundPanel = createBackgroundPanel();
         setContentPane(backgroundPanel);
         backgroundPanel.setLayout(new BorderLayout());
 
-        // Hauptinhalt hinzufügen
         addMainContent(backgroundPanel);
 
         setVisible(true);
     }
 
     private void loadBundle(Locale locale) {
-        bundle = ResourceBundle.getBundle("ressourcen/messages", locale); // Stellen Sie sicher, dass der Pfad zu den Ressourcen korrekt ist.
+        bundle = ResourceBundle.getBundle("ressourcen/messages", locale);
     }
 
     private void loadCustomFont() {
@@ -52,7 +50,7 @@ public class Gleitzeitkonto extends JFrame {
             ge.registerFont(customFont);
         } catch (IOException | FontFormatException e) {
             System.err.println("Fehler beim Laden der Schriftart: " + e.getMessage());
-            customFont = new Font("Arial", Font.PLAIN, 16); // Fallback-Schriftart
+            customFont = new Font("Arial", Font.PLAIN, 16);
         }
     }
 
@@ -69,41 +67,51 @@ public class Gleitzeitkonto extends JFrame {
     }
 
     private void addMainContent(JPanel backgroundPanel) {
-        // Label für die Stunden
-        stundenLabel = new JLabel(String.format("+ %02d:%02d", stunden, minuten), SwingConstants.CENTER);
+        stundenLabel = new JLabel(String.format(String.valueOf(stunden), minuten), SwingConstants.CENTER);
         stundenLabel.setFont(customFont.deriveFont(45f));
         stundenLabel.setForeground(Color.WHITE);
         stundenLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        // Label für das Bild
         imageLabel = new JLabel();
-        updateImage(); // Bild anfangs setzen
+        updateImage();
 
-        // Panel für Inhalt
         JPanel contentPanel = new JPanel();
-        contentPanel.setOpaque(false); // Setze das Panel auf transparent
+        contentPanel.setOpaque(false);
         contentPanel.add(stundenLabel);
         contentPanel.add(imageLabel);
 
-        // Radiobuttons für "Woche", "Monat" und "Jahr"
+        // RadioButtons für "Woche", "Monat" und "Jahr"
         JRadioButton wocheRadioButton = new JRadioButton(bundle.getString("radio.week"));
         JRadioButton monatRadioButton = new JRadioButton(bundle.getString("radio.month"));
         JRadioButton jahrRadioButton = new JRadioButton(bundle.getString("radio.year"));
-
 
         wocheRadioButton.setFont(customFont.deriveFont(21f));
         wocheRadioButton.setForeground(Color.WHITE);
         monatRadioButton.setFont(customFont.deriveFont(21f));
         monatRadioButton.setForeground(Color.WHITE);
         jahrRadioButton.setFont(customFont.deriveFont(21f));
-        jahrRadioButton.setForeground(Color.white);
+        jahrRadioButton.setForeground(Color.WHITE);
 
-        // ButtonGroup
+        // ActionListener für die RadioButtons hinzufügen
+        wocheRadioButton.addActionListener(e -> {
+            aktuellerZeitraum = Zeitraum.WOCHE;
+            updateHours();
+        });
+        monatRadioButton.addActionListener(e -> {
+            aktuellerZeitraum = Zeitraum.MONAT;
+            updateHours();
+        });
+        jahrRadioButton.addActionListener(e -> {
+            aktuellerZeitraum = Zeitraum.JAHR;
+            updateHours();
+        });
+
         ButtonGroup zeitraumGroup = new ButtonGroup();
         zeitraumGroup.add(wocheRadioButton);
         zeitraumGroup.add(monatRadioButton);
         zeitraumGroup.add(jahrRadioButton);
 
+        wocheRadioButton.setSelected(true); // Standardwert
 
         JPanel radioPanel = new JPanel(new GridLayout(1, 3, 10, 0));
         radioPanel.setOpaque(false);
@@ -111,16 +119,13 @@ public class Gleitzeitkonto extends JFrame {
         radioPanel.add(monatRadioButton);
         radioPanel.add(jahrRadioButton);
 
-
         backgroundPanel.add(radioPanel, BorderLayout.NORTH);
         backgroundPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // Button zum Aktualisieren der Stunden
-        JButton updateButton = new JButton(bundle.getString("button.update")); // "Stunden aktualisieren"
+        JButton updateButton = new JButton(bundle.getString("button.update"));
         updateButton.setFont(customFont.deriveFont(20f));
         updateButton.addActionListener(e -> updateHours());
 
-        // Füge den Button zum Hintergrund-Panel hinzu
         backgroundPanel.add(updateButton, BorderLayout.SOUTH);
         backgroundPanel.setBorder(BorderFactory.createEmptyBorder(0, 80, 10, 80));
     }
@@ -138,30 +143,37 @@ public class Gleitzeitkonto extends JFrame {
         imageLabel.setIcon(icon);
     }
 
-    // Methode zum Aktualisieren der Stunden
     private void updateHours() {
-        double gleitzeit;
+        double gleitzeit = 0;
         int mitarbeiterID;
         try {
             datenbank.starten();
             mitarbeiterID = datenbank.findeMitarbeiterID(email);
-            gleitzeit = datenbank.getGleitzeitWoche(mitarbeiterID);
+
+            // Abfrage der Gleitzeit basierend auf dem ausgewählten Zeitraum
+            switch (aktuellerZeitraum) {
+                case WOCHE:
+                    gleitzeit = datenbank.getGleitzeitWoche(mitarbeiterID);
+                    break;
+                case MONAT:
+                    gleitzeit = datenbank.getGleitzeitMonat(mitarbeiterID);
+                    break;
+                case JAHR:
+                    gleitzeit = datenbank.getGleitzeitJahr(mitarbeiterID);
+                    break;
+            }
+
             datenbank.schliessen();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        int stunden = (int) gleitzeit;
 
-    // Minuten berechnen (Nachkommastellen in Minuten umrechnen)
-        int minuten = (int) ((gleitzeit - stunden) * 60);
+        // Berechnung der Stunden und Minuten
+        int stunden = (int) Math.abs(gleitzeit);
+        int minuten = (int) ((Math.abs(gleitzeit) - stunden) * 60);
+        String vorzeichen = gleitzeit >= 0 ? "+" : "-";
 
-        // Update das Bild nach Zeitänderung
         SwingUtilities.invokeLater(this::updateImage);
-        // Update die Stundenanzeige
-        SwingUtilities.invokeLater(() -> stundenLabel.setText(String.format("+ %02d:%02d", stunden, minuten)));
+        SwingUtilities.invokeLater(() -> stundenLabel.setText(String.format("%s %02d:%02d", vorzeichen, stunden, minuten)));
     }
-
-
-
-
 }
