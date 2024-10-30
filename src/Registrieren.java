@@ -248,12 +248,12 @@ public class Registrieren extends JFrame {
 
         // E-Mail-Format validieren
         if (!isValidEmail(email)) {
-            JOptionPane.showMessageDialog(this, "Bitte geben Sie eine gültige E-Mail-Adresse ein (xxx@x.com).", "Ungültige E-Mail", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, messages.getString("email.falsch"));
             return;
         }
 
         if (!isValidPassword(passwort)) {
-            JOptionPane.showMessageDialog(this, "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten.", "Fehler", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, messages.getString("passwort.falsch"));
             return;
         }
 
