@@ -240,8 +240,6 @@ public class Datenbank {
 
 
 
-
-
     public void loescheMitarbeiter(int mitarbeiterId) throws SQLException {
         String query = "DELETE FROM mitarbeiter WHERE mitarbeiter_id = " + mitarbeiterId;
 
@@ -263,7 +261,6 @@ public class Datenbank {
             throw new RuntimeException("Error hashing password", e);
         }
     }
-
 
     public void schliessen() {
         try {

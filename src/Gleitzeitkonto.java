@@ -156,9 +156,6 @@ public class Gleitzeitkonto extends JFrame {
             throw new RuntimeException(e);
         }
 
-        // Debug-Ausgabe zur Überprüfung der Gleitzeit
-        System.out.println("Gleitzeit (in Stunden): " + gleitzeit);
-
         // Berechnung der Stunden und Minuten aus der Gleitzeit
         stunden = (int) Math.abs(gleitzeit);
         minuten = (int) ((Math.abs(gleitzeit) - stunden) * 60);
