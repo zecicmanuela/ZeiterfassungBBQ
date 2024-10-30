@@ -6,8 +6,6 @@ import java.time.LocalTime;
 public class Arbeitszeitgesetz {
 Datenbank datenbank = new Datenbank();
 
-
-
     public boolean pruefeKommen(){
         if (SonnUndFeiertags() && Nachtarbeit()){
             return true;
