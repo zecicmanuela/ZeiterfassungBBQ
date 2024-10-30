@@ -15,7 +15,7 @@ class DatenbankAnmeldenTest {
         datenbank.starten();
         try {
             // Testbenutzer anlegen, falls nicht vorhanden
-            datenbank.addMitarbeiter("Test", "Test", "test@BBQ.de", "passwort", "DE", 40, 8.0);
+            datenbank.addMitarbeiter("Test", "Test", "test@BBQ.de", "passwort", "DE", 40, 8.0,"Wann haben Ihre Eltern geheiratet? ","01.01.2000");
         } catch (SQLException e) {
             e.printStackTrace();
         }
