@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,7 +24,8 @@ public class GUI extends JFrame {
     private String email;
     private int mitarbeiterId; // Mit der ID des Mitarbeiters
 
-    Datenbank datenbank = new Datenbank();
+    private Datenbank datenbank = new Datenbank();
+    private LocalTime startTime; // Startzeit der Arbeitszeit
 
     public GUI(Locale locale, String email) {
         this.email = email;
@@ -35,6 +34,7 @@ public class GUI extends JFrame {
 
         // Mitarbeiter-ID abrufen
         try {
+            datenbank.starten();
             mitarbeiterId = datenbank.findeMitarbeiterID(email);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Fehler beim Abrufen der Mitarbeiter-ID: " + e.getMessage());
@@ -138,9 +138,10 @@ public class GUI extends JFrame {
 
         // ActionListener für den Kommen-Button (Arbeitsbeginn speichern)
         kommenButton.addActionListener(e -> {
+            startTime = LocalTime.now(); // Arbeitsbeginn speichern
             timer.start();
             try {
-                datenbank.mitarbeiterKommt(email); // Arbeitsbeginn speichern
+                datenbank.mitarbeiterKommt(email, LocalDate.now(), startTime); // Arbeitsbeginn speichern
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
@@ -149,11 +150,21 @@ public class GUI extends JFrame {
         // ActionListener für den Gehen-Button (Arbeitsende speichern)
         gehenButton.addActionListener(e -> {
             timer.stop();
+            LocalTime endTime = LocalTime.now(); // Arbeitsende speichern
+            int totalSeconds = elapsedSeconds;
+
+            // Pausenzeiten abziehen
+            int pauseDuration = calculatePauseDuration(totalSeconds);
+            totalSeconds -= pauseDuration;
+
             try {
-                datenbank.mitarbeiterGeht(email); // Arbeitsende speichern
+                datenbank.mitarbeiterGeht(email, LocalDate.now(), endTime, totalSeconds); // Arbeitsende und gesamte Arbeitszeit speichern
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
+
+            elapsedSeconds = 0; // Zurücksetzen des Timers
+            updateCountdownLabel(); // Countdown-Label zurücksetzen
         });
 
         setVisible(true);
@@ -165,6 +176,16 @@ public class GUI extends JFrame {
         int minutes = (elapsedSeconds % 3600) / 60;
         int seconds = elapsedSeconds % 60;
         countdown.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+    }
+
+    // Berechnung der Pausenzeiten
+    private int calculatePauseDuration(int totalSeconds) {
+        if (totalSeconds > 9 * 3600) {
+            return 45 * 60; // 45 Minuten Pause abziehen
+        } else if (totalSeconds > 6 * 3600) {
+            return 30 * 60; // 30 Minuten Pause abziehen
+        }
+        return 0; // Keine Pausenzeiten abziehen
     }
 
     private JButton createFlagButton(String path, Locale locale) {
@@ -203,5 +224,4 @@ public class GUI extends JFrame {
         gleitzeitkonto.setText(bundle.getString("button.flexitime"));
         setTitle(bundle.getString("title"));
     }
-
 }
