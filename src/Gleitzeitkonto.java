@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -13,8 +14,11 @@ public class Gleitzeitkonto extends JFrame {
     private int stunden; // Aktuelle Stunden
     private int minuten; // Aktuelle Minuten
     private ResourceBundle bundle; // ResourceBundle für die Mehrsprachigkeit
+    private Datenbank datenbank = new Datenbank();
+    private int mitarbeiterID;
 
-    public Gleitzeitkonto(Locale locale) {
+    public Gleitzeitkonto(Locale locale, int mitarbeiterID) {
+        this.mitarbeiterID = mitarbeiterID;
         setTitle("Gleitzeitkonto");
         setSize(700, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -136,10 +140,16 @@ public class Gleitzeitkonto extends JFrame {
 
     // Methode zum Aktualisieren der Stunden
     private void updateHours() {
-        // Stunden und Minuten aus der Dummy-Methode abrufen
-        int[] timeFromDatabase = getHoursFromDatabase();
-        stunden = timeFromDatabase[0];
-        minuten = timeFromDatabase[1];
+        double gleitzeit;
+        try {
+            gleitzeit = datenbank.getGleitzeitWoche(mitarbeiterID);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        int stunden = (int) gleitzeit;
+
+    // Minuten berechnen (Nachkommastellen in Minuten umrechnen)
+        int minuten = (int) ((gleitzeit - stunden) * 60);
 
         // Update das Bild nach Zeitänderung
         SwingUtilities.invokeLater(this::updateImage);
@@ -147,12 +157,7 @@ public class Gleitzeitkonto extends JFrame {
         SwingUtilities.invokeLater(() -> stundenLabel.setText(String.format("+ %02d:%02d", stunden, minuten)));
     }
 
-    // Dummy-Methode zur Simulation des Abrufs von Stunden und Minuten aus einer Datenbank
-    private int[] getHoursFromDatabase() {
-        // Aktuell simulieren wir die Rückgabe von zufälligen Stunden und Minuten.
-        stunden = (int) (Math.random() * 10);
-        minuten = (int) (Math.random() * 60);
-        return new int[]{stunden, minuten};
-    }
+
+
 
 }

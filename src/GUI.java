@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
@@ -94,7 +95,13 @@ public class GUI extends JFrame {
         gleitzeitkonto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new Gleitzeitkonto(currentLocale);
+                int mitarbeiterID;
+                try {
+                    mitarbeiterID = datenbank.findeMitarbeiterID(email);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                new Gleitzeitkonto(currentLocale, mitarbeiterID);
             }
         });
         gleitzeitPanel.add(gleitzeitkonto);
