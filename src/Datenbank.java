@@ -114,10 +114,43 @@ public class Datenbank {
     }
 
 
-    public ResultSet getGleitzeit(int mitarbeiterId) throws SQLException {
-        String query = "SELECT * FROM gleitzeit WHERE mitarbeiter_id = " + mitarbeiterId;
+    public double getGleitzeitWoche(int mitarbeiterId) throws SQLException {
+        double wochenstunden = 0, gleitzeit;
+        String query = "SELECT wochenstunden FROM mitarbeiter WHERE mitarbeiter_id = '" + mitarbeiterId + "'";
+        ResultSet resultSet = statement.executeQuery(query);
 
-        return statement.executeQuery(query);
+        if (resultSet.next()) {
+            wochenstunden = resultSet.getDouble("wochenstunden");
+            gleitzeit = getArbeitszeit(mitarbeiterId, 7) - wochenstunden;
+            return gleitzeit;
+        }
+        return 0;
+    }
+
+    public double getGleitzeitMonat(int mitarbeiterId) throws SQLException {
+        double wochenstunden = 0, gleitzeit;
+        String query = "SELECT wochenstunden FROM mitarbeiter WHERE mitarbeiter_id = '" + mitarbeiterId + "'";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        if (resultSet.next()) {
+            wochenstunden = resultSet.getDouble("wochenstunden");
+            gleitzeit = getArbeitszeit(mitarbeiterId, 30) - ((wochenstunden/7)*30);
+            return gleitzeit;
+        }
+        return 0;
+    }
+
+    public double getGleitzeitJahr(int mitarbeiterId) throws SQLException {
+        double wochenstunden = 0, gleitzeit;
+        String query = "SELECT wochenstunden FROM mitarbeiter WHERE mitarbeiter_id = '" + mitarbeiterId + "'";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        if (resultSet.next()) {
+            wochenstunden = resultSet.getDouble("wochenstunden");
+            gleitzeit = getArbeitszeit(mitarbeiterId, 365) - ((wochenstunden/7)*365);
+            return gleitzeit;
+        }
+        return 0;
     }
 
     public double getArbeitszeit(int mitarbeiterId, int tageAnzahl) throws SQLException {
