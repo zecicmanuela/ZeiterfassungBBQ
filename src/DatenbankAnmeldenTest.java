@@ -15,7 +15,7 @@ class DatenbankAnmeldenTest {
         datenbank.starten();
         try {
             // Testbenutzer anlegen, falls nicht vorhanden
-            datenbank.addMitarbeiter("Max", "Mustermann", "test@example.com", "passwort123", "DE", 40, 8.0);
+            datenbank.addMitarbeiter("Test", "Test", "test@BBQ.de", "passwort", "DE", 40, 8.0);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -24,7 +24,7 @@ class DatenbankAnmeldenTest {
     @AfterEach
     void tearDown() {
         try {
-            int mitarbeiterId = datenbank.findeMitarbeiterID("test@example.com");
+            int mitarbeiterId = datenbank.findeMitarbeiterID("test@BBQ.de");
             datenbank.loescheMitarbeiter(mitarbeiterId);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,8 +36,8 @@ class DatenbankAnmeldenTest {
     @Test
     void mitarbeiterAnmelden() {
         try {
-            String result = datenbank.mitarbeiterAnmelden("test@example.com", "passwort123");
-            assertEquals("test@example.com", result, "Die Anmeldung sollte erfolgreich sein.");
+            String result = datenbank.mitarbeiterAnmelden("test@BBQ.de", "passwort");
+            assertEquals("test@BBQ.de", result, "Die Anmeldung sollte erfolgreich sein.");
         } catch (SQLException e) {
             fail("Datenbankfehler bei der Anmeldung: " + e.getMessage());
         }
@@ -46,7 +46,7 @@ class DatenbankAnmeldenTest {
     @Test
     void mitarbeiterAnmeldenFehlgeschlagen() {
         try {
-            String result = datenbank.mitarbeiterAnmelden("test@example.com", "falschesPasswort");
+            String result = datenbank.mitarbeiterAnmelden("test@BBQ.de", "falschesPasswort");
             assertNull(result, "Die Anmeldung sollte fehlschlagen, da das Passwort falsch ist.");
         } catch (SQLException e) {
             fail("Datenbankfehler bei der Anmeldung: " + e.getMessage());
