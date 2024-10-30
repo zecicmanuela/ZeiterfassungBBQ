@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
 public class Registrieren extends JFrame {
 
     private JTextField vornameField;
@@ -19,14 +20,12 @@ public class Registrieren extends JFrame {
     private final Font customFont;
     private final ResourceBundle messages;
 
-
     public Registrieren(Font customFont) {
         this.customFont = customFont;
         this.messages = ResourceBundle.getBundle("ressourcen.messages", Locale.getDefault());
         setTitle(messages.getString("register.title"));
         setSize(900, 800);
         setLayout(new BorderLayout());
-
 
         JPanel backgroundPanel = createBackgroundPanel();
         setupComponents(backgroundPanel);
@@ -93,8 +92,9 @@ public class Registrieren extends JFrame {
         gbc.gridy = 2;
         backgroundPanel.add(emailLabel, gbc);
 
-
+        // E-Mail-Feld konfigurieren
         emailField.setFont(customFont);
+        emailField.setToolTipText("Bitte geben Sie Ihre E-Mail-Adresse im Format xxx@x.com ein."); // Tooltip hinzufügen
         gbc.gridx = 1;
         gbc.gridy = 2;
         backgroundPanel.add(emailField, gbc);
@@ -124,12 +124,11 @@ public class Registrieren extends JFrame {
                 messages.getString("zeitmodell.teilzeit"),
                 messages.getString("zeitmodell.minijob")
         };
-        zeitmodellComboBox = new JComboBox<>(zeitmodelle); // Hier wird die Instanzvariable verwendet
+        zeitmodellComboBox = new JComboBox<>(zeitmodelle);
         zeitmodellComboBox.setFont(customFont);
         gbc.gridx = 1;
         gbc.gridy = 4;
         backgroundPanel.add(zeitmodellComboBox, gbc);
-
 
         JLabel behinderungsgradLabel = new JLabel(messages.getString("register.behinderungsgrad"));
         behinderungsgradLabel.setFont(customFont);
@@ -146,13 +145,20 @@ public class Registrieren extends JFrame {
         gbc.gridy = 5;
         backgroundPanel.add(behinderungsgradSlider, gbc);
 
+        passwortField.setFont(customFont);
+        passwortField.setToolTipText("Mindestens 8 Zeichen, enthält Groß- und Kleinbuchstaben sowie Zahlen."); // Tooltip hinzufügen
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        backgroundPanel.add(passwortField, gbc);
+
         JLabel passwortLabel = new JLabel(messages.getString("register.passwort"));
         passwortLabel.setFont(customFont);
         passwortLabel.setForeground(Color.white);
-        gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridx=0;
+        gbc.gridy=6;
         backgroundPanel.add(passwortLabel, gbc);
 
+        // Bestätigung Passwort Label
         JLabel bestätigungPasswortLabel = new JLabel(messages.getString("register.bestätigung"));
         bestätigungPasswortLabel.setFont(customFont);
         bestätigungPasswortLabel.setForeground(Color.WHITE);
@@ -160,14 +166,13 @@ public class Registrieren extends JFrame {
         gbc.gridy = 7;
         backgroundPanel.add(bestätigungPasswortLabel, gbc);
 
-
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        backgroundPanel.add(passwortField, gbc);
-
+        // Passwort-Bestätigungsfeld konfigurieren
+        passwortBestätigung.setFont(customFont);
+        passwortBestätigung.setToolTipText("Bitte geben Sie das Passwort erneut ein."); // Optionaler Tooltip für Bestätigung
         gbc.gridx = 1;
         gbc.gridy = 7;
         backgroundPanel.add(passwortBestätigung, gbc);
+
 
         JLabel sicherheitsfrageLabel = new JLabel(messages.getString("register.sicherheitsfrage"));
         sicherheitsfrageLabel.setFont(customFont);
@@ -176,7 +181,6 @@ public class Registrieren extends JFrame {
         gbc.gridy = 8;
         backgroundPanel.add(sicherheitsfrageLabel, gbc);
 
-        // Instanzvariable `sicherheitsfragenComboBox` verwenden, nicht eine neue Variable deklarieren
         String[] sicherheitsfragen = {
                 messages.getString("sicherheitsfrage.1"),
                 messages.getString("sicherheitsfrage.2"),
@@ -195,13 +199,11 @@ public class Registrieren extends JFrame {
         gbc.gridy = 9;
         backgroundPanel.add(antwortLabel, gbc);
 
-        // Instanzvariable `antwortFeld` verwenden, nicht eine neue Variable deklarieren
         antwortFeld = new JTextField(20);
         antwortFeld.setFont(customFont);
         gbc.gridx = 1;
         gbc.gridy = 9;
         backgroundPanel.add(antwortFeld, gbc);
-
     }
 
     private void createSpeichernButton(JPanel backgroundPanel, GridBagConstraints gbc) {
@@ -213,24 +215,31 @@ public class Registrieren extends JFrame {
         backgroundPanel.add(speichernButton, gbc);
 
         speichernButton.addActionListener(e -> {
-            String vorname = vornameField.getText();
-            JOptionPane.showMessageDialog(this, messages.getString("register.welcome") + " " + vorname + "!", messages.getString("register.title"), JOptionPane.INFORMATION_MESSAGE);
             try {
                 speichernMitarbeiter();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            dispose();
         });
     }
 
     private void speichernMitarbeiter() throws SQLException {
-        System.out.println("Wir waren hier");
         String vorname = vornameField.getText();
         String nachname = nameField.getText();
         String email = emailField.getText();
         String passwort = new String(passwortField.getPassword());
         String passwortBestätigungText = new String(passwortBestätigung.getPassword());
+
+        // E-Mail-Format validieren
+        if (!isValidEmail(email)) {
+            JOptionPane.showMessageDialog(this, "Bitte geben Sie eine gültige E-Mail-Adresse ein (xxx@x.com).", "Ungültige E-Mail", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!isValidPassword(passwort)) {
+            JOptionPane.showMessageDialog(this, "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten.", "Fehler", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Überprüfen, ob Passwort und Bestätigung übereinstimmen
         if (!passwort.equals(passwortBestätigungText)) {
@@ -238,11 +247,9 @@ public class Registrieren extends JFrame {
             return;
         }
 
-
-        String zeitmodell = (String) zeitmodellComboBox.getSelectedItem(); // Hier den Wert abrufen
+        String zeitmodell = (String) zeitmodellComboBox.getSelectedItem();
         int wochenstunden = 0;
 
-        // Bestimmen Sie die Wochenstunden basierend auf dem Zeitmodell
         if (zeitmodell.equals(messages.getString("zeitmodell.vollzeit"))) {
             wochenstunden = 40;
         } else if (zeitmodell.equals(messages.getString("zeitmodell.teilzeit"))) {
@@ -253,21 +260,25 @@ public class Registrieren extends JFrame {
             JOptionPane.showMessageDialog(this, "Unbekanntes Zeitmodell", "Fehler", JOptionPane.ERROR_MESSAGE);
         }
 
-
         String sicherheitsfrage = (String) sicherheitsfragenComboBox.getSelectedItem();
         String antwort = antwortFeld.getText();
 
-
         datenbank.starten();
-        datenbank.addMitarbeiter(vorname, nachname, email, passwort, "DE", wochenstunden, 5.0, sicherheitsfrage, antwort);
-
-
-
+        datenbank.addMitarbeiter(vorname, nachname, email, hashPasswort(passwort), "DE", wochenstunden, 5.0, sicherheitsfrage, antwort);
     }
 
+    private boolean isValidEmail(String email) {
+        // Regulärer Ausdruck für die E-Mail-Validierung
+        String emailRegex = "^[\\w-\\.]+@[\\w-]+\\.[a-z]{2,4}$";
+        return email.matches(emailRegex);
+    }
 
+    private boolean isValidPassword(String password) {
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+        return password.matches(passwordRegex);
+    }
 
-            private String hashPasswort(String passwort) {
+    private String hashPasswort(String passwort) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(passwort.getBytes());
@@ -283,5 +294,4 @@ public class Registrieren extends JFrame {
             return null;
         }
     }
-
 }
