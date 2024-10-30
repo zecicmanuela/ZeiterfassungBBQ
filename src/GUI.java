@@ -25,7 +25,7 @@ public class GUI extends JFrame {
 
     Datenbank datenbank = new Datenbank();
     Benutzer klasseBenutzer = new Benutzer();
-    Arbeitszeitgesetz arbeitszeitgesetz = new Arbeitszeitgesetz(klasseBenutzer);
+    Arbeitszeitgesetz arbeitszeitgesetz = new Arbeitszeitgesetz();
 
     public GUI(Locale locale, String email) {
         this.email = email;
