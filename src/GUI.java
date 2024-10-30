@@ -125,15 +125,14 @@ public class GUI extends JFrame {
         buttonPanelRechtsOben.add(deutsch);
         buttonPanelRechtsOben.add(english);
 
-        /*benutzer.addActionListener(new ActionListener() {
+        benutzer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Benutzer-Menü öffnen
-                new benutzerMenu(currentLocale);
+                new BenutzerMenu(currentLocale, email);
             }
         });
 
-         */
 
         topPanel.add(buttonPanelRechtsOben, BorderLayout.NORTH);
         add(topPanel, BorderLayout.NORTH);
