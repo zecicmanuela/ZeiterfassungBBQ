@@ -145,20 +145,23 @@ public class Registrieren extends JFrame {
         gbc.gridy = 5;
         backgroundPanel.add(behinderungsgradSlider, gbc);
 
+        JLabel passwortLabel = new JLabel(messages.getString("register.passwort"));
+        passwortLabel.setFont(customFont);
+        passwortLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        backgroundPanel.add(passwortLabel, gbc);
+
+        // Passwortfeld konfigurieren
+        passwortField = new JPasswordField(20);
         passwortField.setFont(customFont);
-        passwortField.setToolTipText("Mindestens 8 Zeichen, enthält Groß- und Kleinbuchstaben sowie Zahlen."); // Tooltip hinzufügen
+        passwortField.setForeground(Color.black);
+        passwortField.setToolTipText("Mindestens 8 Zeichen, enthält Groß- und Kleinbuchstaben sowie Zahlen.");
         gbc.gridx = 1;
         gbc.gridy = 6;
         backgroundPanel.add(passwortField, gbc);
 
-        JLabel passwortLabel = new JLabel(messages.getString("register.passwort"));
-        passwortLabel.setFont(customFont);
-        passwortLabel.setForeground(Color.white);
-        gbc.gridx=0;
-        gbc.gridy=6;
-        backgroundPanel.add(passwortLabel, gbc);
-
-        // Bestätigung Passwort Label
+// Bestätigung Passwort Label
         JLabel bestätigungPasswortLabel = new JLabel(messages.getString("register.bestätigung"));
         bestätigungPasswortLabel.setFont(customFont);
         bestätigungPasswortLabel.setForeground(Color.WHITE);
@@ -166,9 +169,11 @@ public class Registrieren extends JFrame {
         gbc.gridy = 7;
         backgroundPanel.add(bestätigungPasswortLabel, gbc);
 
-        // Passwort-Bestätigungsfeld konfigurieren
+// Passwort-Bestätigungsfeld konfigurieren
+        passwortBestätigung = new JPasswordField(20);
         passwortBestätigung.setFont(customFont);
-        passwortBestätigung.setToolTipText("Bitte geben Sie das Passwort erneut ein."); // Optionaler Tooltip für Bestätigung
+        passwortBestätigung.setForeground(Color.black);
+        passwortBestätigung.setToolTipText("Bitte geben Sie das Passwort erneut ein."); // Tooltip für Bestätigung hinzufügen
         gbc.gridx = 1;
         gbc.gridy = 7;
         backgroundPanel.add(passwortBestätigung, gbc);
@@ -223,6 +228,17 @@ public class Registrieren extends JFrame {
         });
     }
 
+    private boolean isValidEmail(String email) {
+        // Regulärer Ausdruck für die E-Mail-Validierung
+        String emailRegex = "^[\\w-\\.]+@[\\w-]+\\.[a-z]{2,4}$";
+        return email.matches(emailRegex);
+    }
+
+    private boolean isValidPassword(String password) {
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+        return password.matches(passwordRegex);
+    }
+
     private void speichernMitarbeiter() throws SQLException {
         String vorname = vornameField.getText();
         String nachname = nameField.getText();
@@ -263,35 +279,14 @@ public class Registrieren extends JFrame {
         String sicherheitsfrage = (String) sicherheitsfragenComboBox.getSelectedItem();
         String antwort = antwortFeld.getText();
 
+
+
         datenbank.starten();
-        datenbank.addMitarbeiter(vorname, nachname, email, hashPasswort(passwort), "DE", wochenstunden, 5.0, sicherheitsfrage, antwort);
+        // Hier speichern wir das Passwort direkt, ohne es zu hashen
+        datenbank.addMitarbeiter(vorname, nachname, email, passwort, "DE", wochenstunden, 5.0, sicherheitsfrage, antwort);
+
+        JOptionPane.showMessageDialog(this, messages.getString("register.success"));
     }
 
-    private boolean isValidEmail(String email) {
-        // Regulärer Ausdruck für die E-Mail-Validierung
-        String emailRegex = "^[\\w-\\.]+@[\\w-]+\\.[a-z]{2,4}$";
-        return email.matches(emailRegex);
-    }
 
-    private boolean isValidPassword(String password) {
-        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-        return password.matches(passwordRegex);
-    }
-
-    private String hashPasswort(String passwort) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(passwort.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
