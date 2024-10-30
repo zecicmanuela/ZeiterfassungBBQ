@@ -21,9 +21,10 @@ public class GUIAnmeldung extends JFrame {
     private JButton passwortVergessen;
     private Font customFont;
     private ResourceBundle messages;
-    Datenbank datenbank = new Datenbank();
+    private Datenbank datenbank; // Datenbank-Instanz hier deklarieren
 
     public GUIAnmeldung() {
+        datenbank = new Datenbank(); // Datenbank-Instanz initialisieren
         setTitle("Login");
         setSize(700, 500);
         setLayout(new BorderLayout());
@@ -136,7 +137,6 @@ public class GUIAnmeldung extends JFrame {
         passwortField.addActionListener(loginActionListener);
     }
 
-
     private void createFlagButtons(JPanel backgroundPanel, GridBagConstraints gbc) {
         JPanel flagPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         flagPanel.setOpaque(false);
@@ -192,7 +192,7 @@ public class GUIAnmeldung extends JFrame {
         backgroundPanel.add(passwortVergessen, gbc);
 
         passwortVergessen.addActionListener(e -> {
-            PasswortVergessen dialog = new PasswortVergessen(this, messages, customFont);
+            PasswortVergessen dialog = new PasswortVergessen(this, messages, customFont, datenbank); // Datenbank hier übergeben
             dialog.setVisible(true);
         });
     }
@@ -213,7 +213,6 @@ public class GUIAnmeldung extends JFrame {
         benutzernameField.setText("");
         passwortField.setText("");
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GUIAnmeldung::new);

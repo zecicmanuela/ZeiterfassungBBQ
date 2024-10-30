@@ -1,3 +1,6 @@
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.time.LocalDate;
@@ -26,12 +29,14 @@ public class Datenbank {
         }
     }
 
-    public void addMitarbeiter(String vorname, String nachname, String email, String passwortHash, String sprache, int wochenstunden, double gleitzeitWarnungGrenze) throws SQLException {
-        String query = "INSERT INTO mitarbeiter (vorname, nachname, email, passwort_hash, sprache, wochenstunden, gleitzeit_warnung_grenze) " +
-                "VALUES(\"" + vorname + "\", \"" + nachname + "\", \"" + email + "\", \"" + passwortHash + "\", \"" + sprache + "\", " + wochenstunden + ", " + gleitzeitWarnungGrenze + ")";
+    public void addMitarbeiter(String vorname, String nachname, String email, String passwortHash, String sprache, int wochenstunden, double gleitzeitWarnungGrenze, String sicherheitsfrage, String antwort) throws SQLException {
+        // Aktualisierte SQL-Abfrage, um Sicherheitsfrage und Antwort einzuschließen
+        String query = "INSERT INTO mitarbeiter (vorname, nachname, email, passwort_hash, sprache, wochenstunden, gleitzeit_warnung_grenze, sicherheitsfrage, antwort) " +
+                "VALUES(\"" + vorname + "\", \"" + nachname + "\", \"" + email + "\", \"" + passwortHash + "\", \"" + sprache + "\", " + wochenstunden + ", " + gleitzeitWarnungGrenze + ", \"" + sicherheitsfrage + "\", \"" + antwort + "\")";
 
         statement.execute(query);
     }
+
 
 
 
@@ -51,8 +56,40 @@ public class Datenbank {
 
 
     public void updatePasswort(String email, String neuesPasswort) throws SQLException {
-        String query = "UPDATE mitarbeiter SET passwort_hash = '" + neuesPasswort + "' WHERE email = '" + email + "'";
-        statement.executeUpdate(query);
+        // Hashen des Passworts, falls eine Hashfunktion implementiert ist
+        String passwortHash = hashPasswort(neuesPasswort);
+
+        String query = "UPDATE mitarbeiter SET passwort_hash = ? WHERE email = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, passwortHash); // Gehashtes Passwort setzen
+        statement.setString(2, email); // E-Mail-Adresse setzen
+        statement.executeUpdate();
+    }
+    public String getSicherheitsfrage(String email) throws SQLException {
+        String query = "SELECT sicherheitsfrage FROM mitarbeiter WHERE email = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, email);
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getString("sicherheitsfrage");
+        } else {
+            throw new SQLException("Benutzer nicht gefunden");
+        }
+    }
+
+    // Methode, um die Sicherheitsantwort eines Benutzers abzurufen
+    public String getSicherheitsantwort(String email) throws SQLException {
+        String query = "SELECT antwort FROM mitarbeiter WHERE email = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, email);
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getString("antwort");
+        } else {
+            throw new SQLException("Benutzer nicht gefunden");
+        }
     }
 
 
@@ -143,6 +180,21 @@ public class Datenbank {
         statement.executeUpdate(query);
     }
 
+    private String hashPasswort(String passwort) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(passwort.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
 
 
     public void schliessen() {

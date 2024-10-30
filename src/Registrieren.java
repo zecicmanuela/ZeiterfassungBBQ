@@ -169,32 +169,34 @@ public class Registrieren extends JFrame {
         gbc.gridy = 7;
         backgroundPanel.add(passwortBestätigung, gbc);
 
-        JLabel sicherheitsfrage = new JLabel(messages.getString("register.sicherheitsfrage"));
-        sicherheitsfrage.setFont(customFont);
-        sicherheitsfrage.setForeground(Color.WHITE);
+        JLabel sicherheitsfrageLabel = new JLabel(messages.getString("register.sicherheitsfrage"));
+        sicherheitsfrageLabel.setFont(customFont);
+        sicherheitsfrageLabel.setForeground(Color.WHITE);
         gbc.gridx = 0;
         gbc.gridy = 8;
-        backgroundPanel.add(sicherheitsfrage, gbc);
+        backgroundPanel.add(sicherheitsfrageLabel, gbc);
 
+        // Instanzvariable `sicherheitsfragenComboBox` verwenden, nicht eine neue Variable deklarieren
         String[] sicherheitsfragen = {
                 messages.getString("sicherheitsfrage.1"),
                 messages.getString("sicherheitsfrage.2"),
                 messages.getString("sicherheitsfrage.3")
         };
-        JComboBox<String> sicherheitsfragenComboBox = new JComboBox<>(sicherheitsfragen);
+        sicherheitsfragenComboBox = new JComboBox<>(sicherheitsfragen);
         sicherheitsfragenComboBox.setFont(customFont);
         gbc.gridx = 1;
         gbc.gridy = 8;
         backgroundPanel.add(sicherheitsfragenComboBox, gbc);
 
-        JLabel antwort = new JLabel(messages.getString("register.antwort"));
-        antwort.setFont(customFont);
-        antwort.setForeground(Color.WHITE);
+        JLabel antwortLabel = new JLabel(messages.getString("register.antwort"));
+        antwortLabel.setFont(customFont);
+        antwortLabel.setForeground(Color.WHITE);
         gbc.gridx = 0;
         gbc.gridy = 9;
-        backgroundPanel.add(antwort, gbc);
+        backgroundPanel.add(antwortLabel, gbc);
 
-        JTextField antwortFeld = new JTextField(20);
+        // Instanzvariable `antwortFeld` verwenden, nicht eine neue Variable deklarieren
+        antwortFeld = new JTextField(20);
         antwortFeld.setFont(customFont);
         gbc.gridx = 1;
         gbc.gridy = 9;
@@ -242,7 +244,7 @@ public class Registrieren extends JFrame {
 
         // Bestimmen Sie die Wochenstunden basierend auf dem Zeitmodell
         if (zeitmodell.equals(messages.getString("zeitmodell.vollzeit"))) {
-            wochenstunden = 40; // Diese sollten als Strings übereinstimmen mit ENUM
+            wochenstunden = 40;
         } else if (zeitmodell.equals(messages.getString("zeitmodell.teilzeit"))) {
             wochenstunden = 20;
         } else if (zeitmodell.equals(messages.getString("zeitmodell.minijob"))) {
@@ -250,8 +252,14 @@ public class Registrieren extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Unbekanntes Zeitmodell", "Fehler", JOptionPane.ERROR_MESSAGE);
         }
+
+
+        String sicherheitsfrage = (String) sicherheitsfragenComboBox.getSelectedItem();
+        String antwort = antwortFeld.getText();
+
+
         datenbank.starten();
-        datenbank.addMitarbeiter(vorname, nachname, email, passwort, "DE", wochenstunden, 5.0);
+        datenbank.addMitarbeiter(vorname, nachname, email, passwort, "DE", wochenstunden, 5.0, sicherheitsfrage, antwort);
 
 
 
