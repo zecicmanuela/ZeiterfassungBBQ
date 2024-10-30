@@ -78,7 +78,7 @@ public class GUIAnmeldung extends JFrame {
     }
 
     private void createUserInputFields(JPanel backgroundPanel, GridBagConstraints gbc) {
-        benutzernameLabel = new JLabel("Benutzername:");
+        benutzernameLabel = new JLabel("E-Mail");
         benutzernameLabel.setFont(customFont);
         benutzernameLabel.setForeground(Color.white);
         gbc.gridx = 0;
@@ -92,7 +92,7 @@ public class GUIAnmeldung extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         backgroundPanel.add(benutzernameField, gbc);
 
-        passwortLabel = new JLabel("Passwort:");
+        passwortLabel = new JLabel("Passwort");
         passwortLabel.setFont(customFont);
         passwortLabel.setForeground(Color.white);
         gbc.gridx = 0;
@@ -206,7 +206,6 @@ public class GUIAnmeldung extends JFrame {
     private void updateLabels() {
         setTitle(messages.getString("title"));
         loginButton.setText(messages.getString("button.login"));
-        benutzernameLabel.setText(messages.getString("label.username"));
         passwortLabel.setText(messages.getString("label.password"));
         registrierenButton.setText(messages.getString("button.register"));
         passwortVergessen.setText(messages.getString("passwort.vergessen"));

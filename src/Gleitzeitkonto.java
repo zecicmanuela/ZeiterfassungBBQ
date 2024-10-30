@@ -70,7 +70,7 @@ public class Gleitzeitkonto extends JFrame {
 
     private void addMainContent(JPanel backgroundPanel) {
         // Label für die Stunden
-        stundenLabel = new JLabel(String.format("+ %02d:%02d", stunden, minuten), SwingConstants.CENTER);
+        stundenLabel = new JLabel(String.format(String.valueOf(stunden), minuten), SwingConstants.CENTER);
         stundenLabel.setFont(customFont.deriveFont(45f));
         stundenLabel.setForeground(Color.WHITE);
         stundenLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -150,15 +150,19 @@ public class Gleitzeitkonto extends JFrame {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        int stunden = (int) gleitzeit;
 
-    // Minuten berechnen (Nachkommastellen in Minuten umrechnen)
-        int minuten = (int) ((gleitzeit - stunden) * 60);
+        // Berechnung der Stunden und Minuten
+        int stunden = (int) Math.abs(gleitzeit); // Absolutwert für die Anzeige
+        int minuten = (int) ((Math.abs(gleitzeit) - stunden) * 60);
 
-        // Update das Bild nach Zeitänderung
+        // Vorzeichen für die Darstellung setzen
+        String vorzeichen = gleitzeit >= 0 ? "+" : "-";
+
+        // Bild aktualisieren
         SwingUtilities.invokeLater(this::updateImage);
-        // Update die Stundenanzeige
-        SwingUtilities.invokeLater(() -> stundenLabel.setText(String.format("+ %02d:%02d", stunden, minuten)));
+
+        // Stundenanzeige im gewünschten Format aktualisieren
+        SwingUtilities.invokeLater(() -> stundenLabel.setText(String.format("%s %02d:%02d", vorzeichen, stunden, minuten)));
     }
 
 
