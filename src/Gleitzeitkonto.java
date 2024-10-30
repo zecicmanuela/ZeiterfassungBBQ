@@ -73,7 +73,6 @@ public class Gleitzeitkonto extends JFrame {
         stundenLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
         imageLabel = new JLabel();
-        updateImage();
 
         JPanel contentPanel = new JPanel();
         contentPanel.setOpaque(false);
@@ -130,27 +129,16 @@ public class Gleitzeitkonto extends JFrame {
         backgroundPanel.setBorder(BorderFactory.createEmptyBorder(0, 80, 10, 80));
     }
 
-    private void updateImage() {
-        String imagePath;
-        if (stunden < 4) {
-            imagePath = "src/ressourcen/roteAmpel.png";
-        } else if (stunden < 8) {
-            imagePath = "src/ressourcen/gelbeAmpel.png";
-        } else {
-            imagePath = "src/ressourcen/grüneAmpel-2.png";
-        }
-        ImageIcon icon = new ImageIcon(imagePath);
-        imageLabel.setIcon(icon);
-    }
 
     private void updateHours() {
         double gleitzeit = 0;
         int mitarbeiterID;
+
         try {
             datenbank.starten();
             mitarbeiterID = datenbank.findeMitarbeiterID(email);
 
-            // Abfrage der Gleitzeit basierend auf dem ausgewählten Zeitraum
+            // Gleitzeit abrufen basierend auf dem ausgewählten Zeitraum
             switch (aktuellerZeitraum) {
                 case WOCHE:
                     gleitzeit = datenbank.getGleitzeitWoche(mitarbeiterID);
@@ -168,12 +156,37 @@ public class Gleitzeitkonto extends JFrame {
             throw new RuntimeException(e);
         }
 
-        // Berechnung der Stunden und Minuten
-        int stunden = (int) Math.abs(gleitzeit);
-        int minuten = (int) ((Math.abs(gleitzeit) - stunden) * 60);
+        // Debug-Ausgabe zur Überprüfung der Gleitzeit
+        System.out.println("Gleitzeit (in Stunden): " + gleitzeit);
+
+        // Berechnung der Stunden und Minuten aus der Gleitzeit
+        stunden = (int) Math.abs(gleitzeit);
+        minuten = (int) ((Math.abs(gleitzeit) - stunden) * 60);
         String vorzeichen = gleitzeit >= 0 ? "+" : "-";
 
-        SwingUtilities.invokeLater(this::updateImage);
         SwingUtilities.invokeLater(() -> stundenLabel.setText(String.format("%s %02d:%02d", vorzeichen, stunden, minuten)));
+
+        // Übergabe der tatsächlichen Gleitzeit an updateImage für Ampel-Logik
+        final double finalGleitzeit = gleitzeit; // Machen Sie gleitzeit final
+        SwingUtilities.invokeLater(() -> updateImage(finalGleitzeit));
     }
+
+    private void updateImage(double gleitzeit) {
+        String imagePath;
+
+        // Ampel-Bedingungen für Gleitzeit
+        if (gleitzeit < -4) { // Rot bei weniger als -4 Stunden
+            imagePath = "src/ressourcen/roteAmpel.png";
+        } else if (gleitzeit <= 0 && gleitzeit >= -4) { // Gelb bei 0 bis -4 Stunden
+            imagePath = "src/ressourcen/gelbeAmpel.png";
+        } else { // Grün für positive Werte über 0 Stunden
+            imagePath = "src/ressourcen/grüneAmpel-2.png";
+        }
+
+        ImageIcon icon = new ImageIcon(imagePath);
+        imageLabel.setIcon(icon);
+    }
+
+
+
 }

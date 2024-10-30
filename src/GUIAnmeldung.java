@@ -78,7 +78,7 @@ public class GUIAnmeldung extends JFrame {
     }
 
     private void createUserInputFields(JPanel backgroundPanel, GridBagConstraints gbc) {
-        benutzernameLabel = new JLabel("E-Mail");
+        benutzernameLabel = new JLabel("E-Mail:");
         benutzernameLabel.setFont(customFont);
         benutzernameLabel.setForeground(Color.white);
         gbc.gridx = 0;
