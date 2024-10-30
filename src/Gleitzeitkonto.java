@@ -148,7 +148,7 @@ public class Gleitzeitkonto extends JFrame {
         }
         int stunden = (int) gleitzeit;
 
-    // Minuten berechnen (Nachkommastellen in Minuten umrechnen)
+    // Minuten berechnen  (Nachkommastellen in Minuten umrechnen)
         int minuten = (int) ((gleitzeit - stunden) * 60);
 
         // Update das Bild nach Zeitänderung
