@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
@@ -22,21 +24,29 @@ public class GUI extends JFrame {
     private int elapsedSeconds = 0; // Zeit in Sekunden
     private JLabel countdown; // Countdown-Label
     private String email;
+    private int mitarbeiterId; // Mit der ID des Mitarbeiters
 
     Datenbank datenbank = new Datenbank();
-    Benutzer klasseBenutzer = new Benutzer();
-    Arbeitszeitgesetz arbeitszeitgesetz = new Arbeitszeitgesetz();
 
     public GUI(Locale locale, String email) {
         this.email = email;
         this.currentLocale = locale;
         loadBundle(currentLocale);
 
+        // Mitarbeiter-ID abrufen
+        try {
+            mitarbeiterId = datenbank.findeMitarbeiterID(email);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Fehler beim Abrufen der Mitarbeiter-ID: " + e.getMessage());
+        }
+
+        // GUI-Setup
         setTitle(bundle.getString("title"));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Font-Setup
         try {
             customFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -51,6 +61,7 @@ public class GUI extends JFrame {
         backgroundPanel.setLayout(new BorderLayout());
         setContentPane(backgroundPanel);
 
+        // UI-Komponenten erstellen
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
         topPanel.setBorder(BorderFactory.createEmptyBorder(35, 10, 10, 10));
@@ -89,16 +100,10 @@ public class GUI extends JFrame {
         // Gleitzeitkonto Panel
         JPanel gleitzeitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         gleitzeitPanel.setOpaque(false);
-        gleitzeitPanel.setBorder(BorderFactory.createEmptyBorder(0,0,270,0));
+        gleitzeitPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 270, 0));
         gleitzeitkonto = new JButton(bundle.getString("button.flexitime"));
         gleitzeitkonto.setFont(customFont.deriveFont(25f));
-        gleitzeitkonto.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                new Gleitzeitkonto(currentLocale, email);
-            }
-        });
+        gleitzeitkonto.addActionListener(e -> new Gleitzeitkonto(currentLocale, email));
         gleitzeitPanel.add(gleitzeitkonto);
         add(gleitzeitPanel, BorderLayout.SOUTH);
 
@@ -120,40 +125,34 @@ public class GUI extends JFrame {
         buttonPanelRechtsOben.add(deutsch);
         buttonPanelRechtsOben.add(english);
 
-        benutzer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Benutzer-Menü öffnen
-                new BenutzerMenu(currentLocale, email);
-            }
-        });
-
+        benutzer.addActionListener(e -> new BenutzerMenu(currentLocale, email));
 
         topPanel.add(buttonPanelRechtsOben, BorderLayout.NORTH);
         add(topPanel, BorderLayout.NORTH);
 
         // Timer konfigurieren
-        timer = new Timer(1000, new ActionListener() { // 1000 ms = 1 Sekunde
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                elapsedSeconds++;
-                updateCountdownLabel();
+        timer = new Timer(1000, e -> {
+            elapsedSeconds++;
+            updateCountdownLabel();
+        });
+
+        // ActionListener für den Kommen-Button (Arbeitsbeginn speichern)
+        kommenButton.addActionListener(e -> {
+            timer.start();
+            try {
+                datenbank.mitarbeiterKommt(email); // Arbeitsbeginn speichern
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
         });
 
-        // ActionListener für den Kommen-Button (Timer starten)
-        kommenButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timer.start();
-            }
-        });
-
-        // ActionListener für den Gehen-Button (Timer stoppen)
-        gehenButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timer.stop();
+        // ActionListener für den Gehen-Button (Arbeitsende speichern)
+        gehenButton.addActionListener(e -> {
+            timer.stop();
+            try {
+                datenbank.mitarbeiterGeht(email); // Arbeitsende speichern
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
         });
 
@@ -172,14 +171,14 @@ public class GUI extends JFrame {
         JButton button = new JButton();
         try {
             Image img = ImageIO.read(new File(path));
-            Image scaledImg = img.getScaledInstance(32, 19, Image.SCALE_SMOOTH); // Größe anpassen
+            Image scaledImg = img.getScaledInstance(32, 19, Image.SCALE_SMOOTH);
             button.setIcon(new ImageIcon(scaledImg));
         } catch (IOException e) {
             System.err.println("Fehler beim Laden des Bildes: " + path);
         }
-        button.setPreferredSize(new Dimension(32, 19)); // Breite und Höhe der Flaggen in Pixel
-        button.setContentAreaFilled(false); // Hintergrund des Buttons transparent machen
-        button.setBorderPainted(false); // Rahmen des Buttons entfernen
+        button.setPreferredSize(new Dimension(32, 19));
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
 
         // ActionListener für Sprachwechsel
         button.addActionListener(e -> {
