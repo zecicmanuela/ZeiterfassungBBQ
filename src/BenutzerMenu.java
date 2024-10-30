@@ -144,8 +144,4 @@ public class BenutzerMenu extends JFrame {
 
         return dialog;
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new BenutzerMenu(new Locale("de", "DE"), "beispiel@domain.de"));
-    }
 }
