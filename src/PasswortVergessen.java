@@ -108,11 +108,6 @@ public class PasswortVergessen extends JDialog {
         gbc.gridwidth = 2;
         backgroundPanel.add(sicherheitsfragenComboBox, gbc);
 
-        // Sicherheitsfragen Label
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        backgroundPanel.add(sicherheitsfrageLabel, gbc);
 
         // Antwort-Feld
         gbc.gridx = 0;
