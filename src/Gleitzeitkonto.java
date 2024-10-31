@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
@@ -67,7 +66,7 @@ public class Gleitzeitkonto extends JFrame {
     }
 
     private void addMainContent(JPanel backgroundPanel) {
-        stundenLabel = new JLabel(String.format(String.valueOf(stunden), minuten), SwingConstants.CENTER);
+        stundenLabel = new JLabel(String.format("%02d:%02d", stunden, minuten), SwingConstants.CENTER);
         stundenLabel.setFont(customFont.deriveFont(45f));
         stundenLabel.setForeground(Color.WHITE);
         stundenLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -91,6 +90,15 @@ public class Gleitzeitkonto extends JFrame {
         jahrRadioButton.setFont(customFont.deriveFont(21f));
         jahrRadioButton.setForeground(Color.WHITE);
 
+        // Setze den Hintergrund und Rahmen transparent
+        wocheRadioButton.setOpaque(false);
+        monatRadioButton.setOpaque(false);
+        jahrRadioButton.setOpaque(false);
+
+        wocheRadioButton.setBorderPainted(false);
+        monatRadioButton.setBorderPainted(false);
+        jahrRadioButton.setBorderPainted(false);
+
         // ActionListener für die RadioButtons hinzufügen
         wocheRadioButton.addActionListener(e -> {
             aktuellerZeitraum = Zeitraum.WOCHE;
@@ -112,12 +120,14 @@ public class Gleitzeitkonto extends JFrame {
 
         wocheRadioButton.setSelected(true); // Standardwert
 
+        // RadioPanel erstellen und in den Hintergrund integrieren
         JPanel radioPanel = new JPanel(new GridLayout(1, 3, 10, 0));
-        radioPanel.setOpaque(false);
+        radioPanel.setOpaque(false); // Hintergrund transparent
         radioPanel.add(wocheRadioButton);
         radioPanel.add(monatRadioButton);
         radioPanel.add(jahrRadioButton);
 
+        // Hinzufügen des RadioPanels zum Hintergrund-Panel
         backgroundPanel.add(radioPanel, BorderLayout.NORTH);
         backgroundPanel.add(contentPanel, BorderLayout.CENTER);
 
@@ -125,10 +135,11 @@ public class Gleitzeitkonto extends JFrame {
         updateButton.setFont(customFont.deriveFont(20f));
         updateButton.addActionListener(e -> updateHours());
 
+        // Position des Update-Buttons anpassen
+        updateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backgroundPanel.add(updateButton, BorderLayout.SOUTH);
         backgroundPanel.setBorder(BorderFactory.createEmptyBorder(0, 80, 10, 80));
     }
-
 
     private void updateHours() {
         double gleitzeit = 0;
@@ -181,7 +192,7 @@ public class Gleitzeitkonto extends JFrame {
         }
 
         // Ampel-Bedingungen für Gleitzeit
-        if (gleitzeit> (gleitzeitwarnung*1.5)) { // Rot bei mehr als 4 Stunden
+        if (gleitzeit > (gleitzeitwarnung * 1.5)) { // Rot bei mehr als 4 Stunden
             imagePath = "/ressourcen/roteAmpel.png";
         } else if (gleitzeit > gleitzeitwarnung) { // Gelb bei 0 bis -4 Stunden
             imagePath = "/ressourcen/gelbeAmpel.png";
@@ -192,7 +203,4 @@ public class Gleitzeitkonto extends JFrame {
         ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
         imageLabel.setIcon(icon);
     }
-
-
-
 }
