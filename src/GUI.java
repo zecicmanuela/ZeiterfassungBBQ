@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -35,7 +34,6 @@ public class GUI extends JFrame {
         setTitle(bundle.getString("title"));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
 
         // Font-Setup
         try {
@@ -49,16 +47,16 @@ public class GUI extends JFrame {
 
         // Hintergrundbild-Panel
         Hintergrund backgroundPanel = new Hintergrund("/ressourcen/hintergrundBBQ-3.jpg");
-        backgroundPanel.setLayout(new BorderLayout());
         setContentPane(backgroundPanel);
+        backgroundPanel.setLayout(new BorderLayout()); // Layout für das Hintergrundpanel setzen
 
         // UI-Komponenten erstellen
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setOpaque(false);
+        topPanel.setOpaque(false); // Panel transparent machen
         topPanel.setBorder(BorderFactory.createEmptyBorder(35, 10, 10, 10));
 
         JPanel arbeitszeitPanel = new JPanel(new BorderLayout());
-        arbeitszeitPanel.setOpaque(false);
+        arbeitszeitPanel.setOpaque(false); // Panel transparent machen
         arbeitszeitPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
         gearbeiteteStunden = new JLabel(bundle.getString("worked.hours"), SwingConstants.CENTER);
@@ -74,7 +72,7 @@ public class GUI extends JFrame {
         topPanel.add(arbeitszeitPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        buttonPanel.setOpaque(false);
+        buttonPanel.setOpaque(false); // Panel transparent machen
 
         // Kommen-Button
         kommenButton = new JButton(bundle.getString("button.come"));
@@ -90,7 +88,7 @@ public class GUI extends JFrame {
 
         // Gleitzeitkonto Panel
         JPanel gleitzeitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        gleitzeitPanel.setOpaque(false);
+        gleitzeitPanel.setOpaque(false); // Panel transparent machen
         gleitzeitPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 270, 0));
         gleitzeitkonto = new JButton(bundle.getString("button.flexitime"));
         gleitzeitkonto.setFont(customFont.deriveFont(25f));
@@ -112,7 +110,7 @@ public class GUI extends JFrame {
         JPanel buttonPanelRechtsOben = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanelRechtsOben.setBorder(BorderFactory.createEmptyBorder(48, 30, 0, 83));
         buttonPanelRechtsOben.add(benutzer);
-        buttonPanelRechtsOben.setOpaque(false);
+        buttonPanelRechtsOben.setOpaque(false); // Panel transparent machen
         buttonPanelRechtsOben.add(deutsch);
         buttonPanelRechtsOben.add(english);
 

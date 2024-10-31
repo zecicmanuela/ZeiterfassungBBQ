@@ -149,6 +149,17 @@ public class Datenbank {
         return 0;
     }
 
+    public double getGleitzeitwarnung(String email) throws SQLException {
+        String checkQuery = "SELECT gleitzeit_warnung_grenze FROM mitarbeiter WHERE email = '" + email + "'";
+        ResultSet resultSet = statement.executeQuery(checkQuery);
+        String gleitzeit_warnung = null;
+        if (resultSet.next()) {
+            gleitzeit_warnung = resultSet.getString("gleitzeit_warnung_grenze");
+            return Double.parseDouble(gleitzeit_warnung);
+        }
+        return 0;
+    }
+
 
     public int findeMitarbeiterID(String email) throws SQLException {
         String checkQuery = "SELECT mitarbeiter_id FROM mitarbeiter WHERE email = '" + email + "'";

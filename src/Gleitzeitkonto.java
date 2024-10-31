@@ -171,10 +171,19 @@ public class Gleitzeitkonto extends JFrame {
     private void updateImage(double gleitzeit) {
         String imagePath;
         gleitzeit = Math.abs(gleitzeit);
+        double gleitzeitwarnung;
+        try {
+            datenbank.starten();
+            gleitzeitwarnung = datenbank.getGleitzeitwarnung(email);
+            datenbank.schliessen();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         // Ampel-Bedingungen für Gleitzeit
-        if (gleitzeit>30) { // Rot bei mehr als 4 Stunden
+        if (gleitzeit> (gleitzeitwarnung*1.5)) { // Rot bei mehr als 4 Stunden
             imagePath = "/ressourcen/roteAmpel.png";
-        } else if (gleitzeit >10) { // Gelb bei 0 bis -4 Stunden
+        } else if (gleitzeit > gleitzeitwarnung) { // Gelb bei 0 bis -4 Stunden
             imagePath = "/ressourcen/gelbeAmpel.png";
         } else { // Grün für positive Werte über 0 Stunden
             imagePath = "/ressourcen/grüneAmpel-2.png";
