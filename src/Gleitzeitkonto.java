@@ -45,7 +45,7 @@ public class Gleitzeitkonto extends JFrame {
 
     private void loadCustomFont() {
         try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
+            customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
         } catch (IOException | FontFormatException e) {
@@ -59,7 +59,7 @@ public class Gleitzeitkonto extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon icon = new ImageIcon("src/ressourcen/hintergrundBBQ-3.jpg");
+                ImageIcon icon = new ImageIcon(getClass().getResource("/ressourcen/hintergrundBBQ-3.jpg"));
                 Image img = icon.getImage();
                 g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
             }
@@ -173,14 +173,14 @@ public class Gleitzeitkonto extends JFrame {
         gleitzeit = Math.abs(gleitzeit);
         // Ampel-Bedingungen für Gleitzeit
         if (gleitzeit>30) { // Rot bei mehr als 4 Stunden
-            imagePath = "src/ressourcen/roteAmpel.png";
+            imagePath = "/ressourcen/roteAmpel.png";
         } else if (gleitzeit >10) { // Gelb bei 0 bis -4 Stunden
-            imagePath = "src/ressourcen/gelbeAmpel.png";
+            imagePath = "/ressourcen/gelbeAmpel.png";
         } else { // Grün für positive Werte über 0 Stunden
-            imagePath = "src/ressourcen/grüneAmpel-2.png";
+            imagePath = "/ressourcen/grüneAmpel-2.png";
         }
 
-        ImageIcon icon = new ImageIcon(imagePath);
+        ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
         imageLabel.setIcon(icon);
     }
 

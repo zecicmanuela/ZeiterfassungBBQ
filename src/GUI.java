@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -32,7 +31,6 @@ public class GUI extends JFrame {
         this.currentLocale = locale;
         loadBundle(currentLocale);
 
-
         // GUI-Setup
         setTitle(bundle.getString("title"));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -41,7 +39,7 @@ public class GUI extends JFrame {
 
         // Font-Setup
         try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
+            customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
         } catch (IOException | FontFormatException e) {
@@ -50,7 +48,7 @@ public class GUI extends JFrame {
         }
 
         // Hintergrundbild-Panel
-        Hintergrund backgroundPanel = new Hintergrund("src/ressourcen/hintergrundBBQ-3.jpg");
+        Hintergrund backgroundPanel = new Hintergrund("/ressourcen/hintergrundBBQ-3.jpg");
         backgroundPanel.setLayout(new BorderLayout());
         setContentPane(backgroundPanel);
 
@@ -101,14 +99,14 @@ public class GUI extends JFrame {
         add(gleitzeitPanel, BorderLayout.SOUTH);
 
         // Benutzer-Button
-        ImageIcon benutzerIcon = new ImageIcon("src/ressourcen/userIcon-2.png");
+        ImageIcon benutzerIcon = new ImageIcon(getClass().getResource("/ressourcen/userIcon-2.png"));
         Image image = benutzerIcon.getImage();
         Image scaledImage = image.getScaledInstance(130, 130, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         benutzer = new JButton(scaledIcon);
 
-        JButton deutsch = createFlagButton("src/ressourcen/deutscheFlagge.png", new Locale("de", "DE"));
-        JButton english = createFlagButton("src/ressourcen/UK-Flagge.png", new Locale("en", "UK"));
+        JButton deutsch = createFlagButton("/ressourcen/deutscheFlagge.png", new Locale("de", "DE"));
+        JButton english = createFlagButton("/ressourcen/UK-Flagge.png", new Locale("en", "UK"));
 
         // Panel für den Benutzer-Button
         JPanel buttonPanelRechtsOben = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -196,7 +194,7 @@ public class GUI extends JFrame {
     private JButton createFlagButton(String path, Locale locale) {
         JButton button = new JButton();
         try {
-            Image img = ImageIO.read(new File(path));
+            Image img = ImageIO.read(getClass().getResourceAsStream(path));
             Image scaledImg = img.getScaledInstance(32, 19, Image.SCALE_SMOOTH);
             button.setIcon(new ImageIcon(scaledImg));
         } catch (IOException e) {

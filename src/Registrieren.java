@@ -41,7 +41,7 @@ public class Registrieren extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon icon = new ImageIcon("src/ressourcen/hintergrundBBQ-3.jpg");
+                ImageIcon icon = new ImageIcon(getClass().getResource("/ressourcen/hintergrundBBQ-3.jpg"));
                 Image img = icon.getImage();
                 g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
             }
@@ -92,7 +92,6 @@ public class Registrieren extends JFrame {
         gbc.gridy = 2;
         backgroundPanel.add(emailLabel, gbc);
 
-        // E-Mail-Feld konfigurieren
         emailField.setFont(customFont);
         emailField.setToolTipText("Bitte geben Sie Ihre E-Mail-Adresse im Format xxx@x.com ein."); // Tooltip hinzufügen
         gbc.gridx = 1;
@@ -152,7 +151,6 @@ public class Registrieren extends JFrame {
         gbc.gridy = 6;
         backgroundPanel.add(passwortLabel, gbc);
 
-        // Passwortfeld konfigurieren
         passwortField = new JPasswordField(20);
         passwortField.setFont(customFont);
         passwortField.setForeground(Color.black);
@@ -161,7 +159,6 @@ public class Registrieren extends JFrame {
         gbc.gridy = 6;
         backgroundPanel.add(passwortField, gbc);
 
-// Bestätigung Passwort Label
         JLabel bestätigungPasswortLabel = new JLabel(messages.getString("register.bestätigung"));
         bestätigungPasswortLabel.setFont(customFont);
         bestätigungPasswortLabel.setForeground(Color.WHITE);
@@ -169,7 +166,6 @@ public class Registrieren extends JFrame {
         gbc.gridy = 7;
         backgroundPanel.add(bestätigungPasswortLabel, gbc);
 
-// Passwort-Bestätigungsfeld konfigurieren
         passwortBestätigung = new JPasswordField(20);
         passwortBestätigung.setFont(customFont);
         passwortBestätigung.setForeground(Color.black);
@@ -177,7 +173,6 @@ public class Registrieren extends JFrame {
         gbc.gridx = 1;
         gbc.gridy = 7;
         backgroundPanel.add(passwortBestätigung, gbc);
-
 
         JLabel sicherheitsfrageLabel = new JLabel(messages.getString("register.sicherheitsfrage"));
         sicherheitsfrageLabel.setFont(customFont);
@@ -229,7 +224,6 @@ public class Registrieren extends JFrame {
     }
 
     private boolean isValidEmail(String email) {
-        // Regulärer Ausdruck für die E-Mail-Validierung
         String emailRegex = "^[\\w-\\.]+@[\\w-]+\\.[a-z]{2,4}$";
         return email.matches(emailRegex);
     }
@@ -246,7 +240,6 @@ public class Registrieren extends JFrame {
         String passwort = new String(passwortField.getPassword());
         String passwortBestätigungText = new String(passwortBestätigung.getPassword());
 
-        // E-Mail-Format validieren
         if (!isValidEmail(email)) {
             JOptionPane.showMessageDialog(this, messages.getString("email.falsch"));
             return;
@@ -257,36 +250,25 @@ public class Registrieren extends JFrame {
             return;
         }
 
-        // Überprüfen, ob Passwort und Bestätigung übereinstimmen
         if (!passwort.equals(passwortBestätigungText)) {
             JOptionPane.showMessageDialog(this, messages.getString("register.passwort_mismatch"), messages.getString("error"), JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         String zeitmodell = (String) zeitmodellComboBox.getSelectedItem();
-        int wochenstunden = 0;
-
-        if (zeitmodell.equals(messages.getString("zeitmodell.vollzeit"))) {
-            wochenstunden = 40;
-        } else if (zeitmodell.equals(messages.getString("zeitmodell.teilzeit"))) {
-            wochenstunden = 20;
-        } else if (zeitmodell.equals(messages.getString("zeitmodell.minijob"))) {
-            wochenstunden = 10;
-        } else {
-            JOptionPane.showMessageDialog(this, "Unbekanntes Zeitmodell", "Fehler", JOptionPane.ERROR_MESSAGE);
-        }
+        int wochenstunden = switch (zeitmodell) {
+            case "Vollzeit" -> 40;
+            case "Teilzeit" -> 20;
+            case "Minijob" -> 10;
+            default -> throw new IllegalStateException("Unexpected value: " + zeitmodell);
+        };
 
         String sicherheitsfrage = (String) sicherheitsfragenComboBox.getSelectedItem();
         String antwort = antwortFeld.getText();
 
-
-
         datenbank.starten();
-        // Hier speichern wir das Passwort direkt, ohne es zu hashen
         datenbank.addMitarbeiter(vorname, nachname, email, passwort, "DE", wochenstunden, 5.0, sicherheitsfrage, antwort);
 
         JOptionPane.showMessageDialog(this, messages.getString("register.success"));
     }
-
-
 }
