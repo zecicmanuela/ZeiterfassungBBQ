@@ -25,6 +25,7 @@ public class GUI extends JFrame {
     private int mitarbeiterId; // Mit der ID des Mitarbeiters
 
     private Datenbank datenbank = new Datenbank();
+    private Arbeitszeitgesetz arbeitszeitgesetz = new Arbeitszeitgesetz();
     private LocalTime startTime; // Startzeit der Arbeitszeit
 
     public GUI(Locale locale, String email) {

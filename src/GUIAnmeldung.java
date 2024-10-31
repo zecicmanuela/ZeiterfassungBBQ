@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
@@ -45,7 +44,7 @@ public class GUIAnmeldung extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon icon = new ImageIcon("src/ressourcen/hintergrundBBQ-3.jpg");
+                ImageIcon icon = new ImageIcon(getClass().getResource("/ressourcen/hintergrundBBQ-3.jpg"));
                 Image img = icon.getImage();
                 g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
             }
@@ -68,7 +67,7 @@ public class GUIAnmeldung extends JFrame {
 
     private void loadCustomFont() {
         try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
+            customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/ressourcen/KGDoYouLoveMe.ttf")).deriveFont(16f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
         } catch (IOException | FontFormatException e) {
@@ -141,8 +140,8 @@ public class GUIAnmeldung extends JFrame {
         JPanel flagPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         flagPanel.setOpaque(false);
 
-        deutsch = createFlagButton("src/ressourcen/deutscheFlagge.png", Locale.GERMAN);
-        englisch = createFlagButton("src/ressourcen/UK-Flagge.png", Locale.ENGLISH);
+        deutsch = createFlagButton("/ressourcen/deutscheFlagge.png", Locale.GERMAN);
+        englisch = createFlagButton("/ressourcen/UK-Flagge.png", Locale.ENGLISH);
 
         flagPanel.add(deutsch);
         flagPanel.add(englisch);
@@ -155,7 +154,7 @@ public class GUIAnmeldung extends JFrame {
     private JButton createFlagButton(String path, Locale locale) {
         JButton button = new JButton();
         try {
-            Image img = ImageIO.read(new File(path));
+            Image img = ImageIO.read(getClass().getResourceAsStream(path));
             Image scaledImg = img.getScaledInstance(32, 19, Image.SCALE_SMOOTH); // Größe anpassen
             button.setIcon(new ImageIcon(scaledImg));
         } catch (IOException e) {
