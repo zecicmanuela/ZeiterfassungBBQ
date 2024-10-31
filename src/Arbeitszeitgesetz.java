@@ -7,7 +7,7 @@ public class Arbeitszeitgesetz {
 Datenbank datenbank = new Datenbank();
 
     public boolean pruefeKommen(){
-        if (SonnUndFeiertags() && Nachtarbeit()){
+        if (sonnUndFeiertags() && nachtarbeit()){
             return true;
         }
         return false;
@@ -24,13 +24,13 @@ Datenbank datenbank = new Datenbank();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        if (MaximaleArbeitszeit(arbeitszeit)){
+        if (maximaleArbeitszeit(arbeitszeit)){
             return true;
         }
         return false;
     }
 
-    public boolean MaximaleArbeitszeit(double arbeitszeit){
+    public boolean maximaleArbeitszeit(double arbeitszeit){
         if (20<18){
             if (arbeitszeit>9)
                 return false;
@@ -41,7 +41,7 @@ Datenbank datenbank = new Datenbank();
         return true;
     }
 
-    public boolean SonnUndFeiertags(){
+    public boolean sonnUndFeiertags(){
         LocalDate datum = LocalDate.now();
         if (datum.getDayOfWeek() == DayOfWeek.SUNDAY)
             return false;
@@ -49,7 +49,7 @@ Datenbank datenbank = new Datenbank();
     }
 
 
-    public boolean Nachtarbeit(){
+    public boolean nachtarbeit(){
         LocalTime arbeitsbeginn = LocalTime.now().withNano(0);
         LocalTime fruehZeit = LocalTime.of(6, 0); // 6:00 Uhr
         LocalTime spaetZeit = LocalTime.of(22, 0); // 22:00 Uhr

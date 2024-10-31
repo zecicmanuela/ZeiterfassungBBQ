@@ -1,6 +1,3 @@
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.time.LocalDate;
@@ -49,25 +46,13 @@ public class Datenbank {
         }
     }
 
-
-
-
-
-
-    public void addArbeitszeit(int mitarbeiterId, String datum, String arbeitsbeginn, String arbeitsende, boolean istUeberzeit) throws SQLException {
-        String query = "INSERT INTO arbeitszeiten (mitarbeiter_id, datum, arbeitsbeginn, arbeitsende, ist_ueberzeit) " +
-                "VALUES(" + mitarbeiterId + ", '" + datum + "', '" + arbeitsbeginn + "', '" + arbeitsende + "', " + istUeberzeit + ")";
+    public void addFehltag(int mitarbeiterId) throws SQLException {
+        LocalDate datum = LocalDate.now();
+        String query = "INSERT INTO arbeitszeiten (mitarbeiter_id, datum, arbeitsbeginn, arbeitsende) " +
+                "VALUES(" + mitarbeiterId + ", " + datum + ", 8:00, 16:30 )";
 
         statement.execute(query);
     }
-
-    public void addGleitzeit(int mitarbeiterId, String monat, double gleitzeitStunden, String quartal, int jahr) throws SQLException {
-        String query = "INSERT INTO gleitzeit (mitarbeiter_id, monat, gleitzeit_stunden, quartal, jahr) " +
-                "VALUES(" + mitarbeiterId + ", '" + monat + "', " + gleitzeitStunden + ", '" + quartal + "', " + jahr + ")";
-
-        statement.execute(query);
-    }
-
 
     public void updatePasswort(String email, String neuesPasswort) throws SQLException {
         String query = "UPDATE mitarbeiter SET Passwort_hash = ? WHERE email = ?";
@@ -77,7 +62,6 @@ public class Datenbank {
             pstmt.executeUpdate();
         }
     }
-
 
     public String getSicherheitsfrage(String email) throws SQLException {
         String query = "SELECT sicherheitsfrage FROM mitarbeiter WHERE email = ?";
@@ -106,12 +90,6 @@ public class Datenbank {
         }
     }
 
-
-    public void updateSprache(int mitarbeiterId, String neueSprache) throws SQLException {
-        String query = "UPDATE einstellungen SET sprache = '" + neueSprache + "' WHERE mitarbeiter_id = " + mitarbeiterId;
-
-        statement.executeUpdate(query);
-    }
 
 
     public double getGleitzeitWoche(int mitarbeiterId) throws SQLException {
@@ -171,12 +149,6 @@ public class Datenbank {
         return 0;
     }
 
-
-    public void updateGleitzeitWarnungGrenze(int mitarbeiterId, double neueGrenze) throws SQLException {
-        String query = "UPDATE einstellungen SET gleitzeit_grenze = " + neueGrenze + " WHERE mitarbeiter_id = " + mitarbeiterId;
-
-        statement.executeUpdate(query);
-    }
 
     public int findeMitarbeiterID(String email) throws SQLException {
         String checkQuery = "SELECT mitarbeiter_id FROM mitarbeiter WHERE email = '" + email + "'";
@@ -238,28 +210,10 @@ public class Datenbank {
         }
     }
 
-
-
     public void loescheMitarbeiter(int mitarbeiterId) throws SQLException {
         String query = "DELETE FROM mitarbeiter WHERE mitarbeiter_id = " + mitarbeiterId;
 
         statement.executeUpdate(query);
-    }
-
-    private String hashPasswort(String passwort) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(passwort.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if(hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing password", e);
-        }
     }
 
     public void schliessen() {

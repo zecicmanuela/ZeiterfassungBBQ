@@ -22,7 +22,6 @@ public class GUI extends JFrame {
     private int elapsedSeconds = 0; // Zeit in Sekunden
     private JLabel countdown; // Countdown-Label
     private String email;
-    private int mitarbeiterId; // Mit der ID des Mitarbeiters
 
     private Datenbank datenbank = new Datenbank();
     private Arbeitszeitgesetz arbeitszeitgesetz = new Arbeitszeitgesetz();
@@ -33,13 +32,6 @@ public class GUI extends JFrame {
         this.currentLocale = locale;
         loadBundle(currentLocale);
 
-        // Mitarbeiter-ID abrufen
-        try {
-            datenbank.starten();
-            mitarbeiterId = datenbank.findeMitarbeiterID(email);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Fehler beim Abrufen der Mitarbeiter-ID: " + e.getMessage());
-        }
 
         // GUI-Setup
         setTitle(bundle.getString("title"));
@@ -139,10 +131,16 @@ public class GUI extends JFrame {
 
         // ActionListener für den Kommen-Button (Arbeitsbeginn speichern)
         kommenButton.addActionListener(e -> {
+            if (!arbeitszeitgesetz.pruefeKommen()){
+                JOptionPane.showMessageDialog(this, "Sie können nicht kommen, weil Sie Sich außerhalb der gesetzlichen Arbeitszeiten befinden!");
+                return;
+            }
             startTime = LocalTime.now(); // Arbeitsbeginn speichern
             timer.start();
             try {
+                datenbank.starten();
                 datenbank.mitarbeiterKommt(email); // Arbeitsbeginn speichern
+                datenbank.schliessen();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
@@ -150,6 +148,10 @@ public class GUI extends JFrame {
 
         // ActionListener für den Gehen-Button (Arbeitsende speichern)
         gehenButton.addActionListener(e -> {
+            if (!arbeitszeitgesetz.pruefeGehen(email)){
+                JOptionPane.showMessageDialog(this, "Sie können nicht gehen, weil Sie sich heute noch nicht eingestempelt haben!");
+                return;
+            }
             timer.stop();
             LocalTime endTime = LocalTime.now(); // Arbeitsende speichern
             int totalSeconds = elapsedSeconds;
@@ -159,7 +161,9 @@ public class GUI extends JFrame {
             totalSeconds -= pauseDuration;
 
             try {
+                datenbank.starten();
                 datenbank.mitarbeiterGeht(email); // Arbeitsende und gesamte Arbeitszeit speichern
+                datenbank.schliessen();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Fehler beim Speichern der Arbeitszeit: " + ex.getMessage());
             }
